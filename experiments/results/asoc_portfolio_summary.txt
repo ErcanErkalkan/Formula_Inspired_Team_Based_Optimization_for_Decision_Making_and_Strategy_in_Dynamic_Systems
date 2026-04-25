@@ -1,0 +1,97 @@
+ASOC Portfolio Walk-Forward Suite
+===============================
+Universes: ['tech14', 'market20']
+Decision rules: ['utopia', 'max_sharpe', 'min_variance']
+Cost rates: [0.0005, 0.001, 0.0025]
+Primary selection: utopia at 10 bps
+
+Fixed-budget pop calibration:
+  - tech14: {'FITO': 79, 'DNSGA-II-A': 101, 'DNSGA-II-B': 98, 'KGB-DMOEA': 98, 'MDDM-DMOEA': 158, 'NSGA-II': 158, 'PPS-DMOEA': 158}
+  - market20: {'FITO': 79, 'DNSGA-II-A': 89, 'DNSGA-II-B': 88, 'KGB-DMOEA': 85, 'MDDM-DMOEA': 158, 'NSGA-II': 158, 'PPS-DMOEA': 158}
+
+Primary final wealth means (main family):
+  - tech14:
+    FITO: 41.618
+    MDDM-DMOEA: 34.715
+    DNSGA-II-A: 34.609
+    DNSGA-II-B: 31.140
+    PPS-DMOEA: 27.783
+    NSGA-II: 24.832
+    KGB-DMOEA: 21.728
+  - market20:
+    NSGA-II: 6.404
+    DNSGA-II-A: 6.058
+    MDDM-DMOEA: 5.887
+    KGB-DMOEA: 5.810
+    FITO: 5.744
+    PPS-DMOEA: 5.570
+    DNSGA-II-B: 5.520
+
+Sensitivity winner counts across rule/cost combinations:
+  - main:
+    best_mhv:
+      MDDM-DMOEA: 18
+    best_migd:
+      DNSGA-II-A: 9
+      MDDM-DMOEA: 9
+    best_wealth:
+      FITO: 6
+      NSGA-II: 6
+      DNSGA-II-A: 3
+      KGB-DMOEA: 3
+    best_ann_return:
+      FITO: 6
+      NSGA-II: 6
+      DNSGA-II-A: 3
+      KGB-DMOEA: 3
+  - budget:
+    best_mhv:
+      MDDM-DMOEA: 18
+    best_migd:
+      MDDM-DMOEA: 9
+      NSGA-II: 9
+    best_wealth:
+      MDDM-DMOEA: 6
+      NSGA-II: 6
+      DNSGA-II-A: 3
+      KGB-DMOEA: 3
+    best_ann_return:
+      MDDM-DMOEA: 6
+      NSGA-II: 6
+      DNSGA-II-A: 3
+      KGB-DMOEA: 3
+
+Simple benchmark strategies (primary 10 bps):
+  - tech14:
+    EqualWeight: wealth=7.987, ann_return=0.244, ann_vol=0.237, turnover=0.000
+    RollingMinVar: wealth=4.155, ann_return=0.162, ann_vol=0.202, turnover=0.202
+  - market20:
+    EqualWeight: wealth=4.201, ann_return=0.163, ann_vol=0.170, turnover=0.000
+    RollingMinVar: wealth=3.473, ann_return=0.140, ann_vol=0.153, turnover=0.230
+
+Holm-corrected FITO wins in the main family:
+  - annualized_return | tech14 vs DNSGA-II-B (raw p=0.002799, Holm p=0.02239, delta=0.555)
+  - annualized_return | tech14 vs KGB-DMOEA (raw p=4.54e-06, Holm p=5.448e-05, delta=0.850)
+  - annualized_return | tech14 vs NSGA-II (raw p=1.6e-05, Holm p=0.000176, delta=0.800)
+  - annualized_return | tech14 vs PPS-DMOEA (raw p=0.0003048, Holm p=0.003048, delta=0.670)
+  - final_wealth | tech14 vs DNSGA-II-B (raw p=0.002799, Holm p=0.02239, delta=0.555)
+  - final_wealth | tech14 vs KGB-DMOEA (raw p=4.54e-06, Holm p=5.448e-05, delta=0.850)
+  - final_wealth | tech14 vs NSGA-II (raw p=1.6e-05, Holm p=0.000176, delta=0.800)
+  - final_wealth | tech14 vs PPS-DMOEA (raw p=0.0003048, Holm p=0.003048, delta=0.670)
+  - mhv | tech14 vs KGB-DMOEA (raw p=1.201e-06, Holm p=1.201e-05, delta=0.900)
+  - mhv | tech14 vs NSGA-II (raw p=0.0001037, Holm p=0.0009336, delta=0.720)
+  - mhv | tech14 vs PPS-DMOEA (raw p=0.00604, Holm p=0.04832, delta=0.510)
+  - migd | tech14 vs KGB-DMOEA (raw p=2.356e-06, Holm p=1.885e-05, delta=-0.875)
+  - migd | tech14 vs NSGA-II (raw p=0.0001037, Holm p=0.0007261, delta=-0.720)
+
+Holm-corrected FITO wins in the fixed-budget family:
+  - annualized_return | tech14 vs DNSGA-II-A (raw p=0.0004601, Holm p=0.003681, delta=0.650)
+  - annualized_return | tech14 vs DNSGA-II-B (raw p=0.001014, Holm p=0.007099, delta=0.610)
+  - annualized_return | tech14 vs KGB-DMOEA (raw p=1.251e-05, Holm p=0.0001376, delta=0.810)
+  - annualized_return | tech14 vs NSGA-II (raw p=0.0001294, Holm p=0.001165, delta=0.710)
+  - final_wealth | tech14 vs DNSGA-II-A (raw p=0.0004601, Holm p=0.003681, delta=0.650)
+  - final_wealth | tech14 vs DNSGA-II-B (raw p=0.001014, Holm p=0.007099, delta=0.610)
+  - final_wealth | tech14 vs KGB-DMOEA (raw p=1.251e-05, Holm p=0.0001376, delta=0.810)
+  - final_wealth | tech14 vs NSGA-II (raw p=0.0001294, Holm p=0.001165, delta=0.710)
+  - mhv | tech14 vs KGB-DMOEA (raw p=1.104e-05, Holm p=7.731e-05, delta=0.815)
+  - migd | tech14 vs KGB-DMOEA (raw p=1.6e-05, Holm p=9.598e-05, delta=-0.800)

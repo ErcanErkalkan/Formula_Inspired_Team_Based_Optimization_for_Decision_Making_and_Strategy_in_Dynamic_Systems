@@ -1,0 +1,20 @@
+{
+  "tech14": {
+    "FITO": 79,
+    "DNSGA-II-A": 101,
+    "DNSGA-II-B": 98,
+    "KGB-DMOEA": 98,
+    "MDDM-DMOEA": 158,
+    "NSGA-II": 158,
+    "PPS-DMOEA": 158
+  },
+  "market20": {
+    "FITO": 79,
+    "DNSGA-II-A": 89,
+    "DNSGA-II-B": 88,
+    "KGB-DMOEA": 85,
+    "MDDM-DMOEA": 158,
+    "NSGA-II": 158,
+    "PPS-DMOEA": 158
+  }
+}

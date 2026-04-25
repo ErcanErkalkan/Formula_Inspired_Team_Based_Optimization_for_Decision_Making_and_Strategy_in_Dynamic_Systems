@@ -1,0 +1,17 @@
+\begin{table}[!t]
+\centering
+\caption{Static sanity check for selected FITO variants. FITO is the final dynamic default; FITO-noSR disables the stagnation restart for sensitivity analysis.}
+\label{tab:ablation}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccc}
+\toprule
+Problem & Metric & FITO & FITO+BR & FITO-noSR & FITO-noLS \\
+\midrule
+ZDT4 & HV & \textbf{0.86994 $\pm$ 0.00079} & 0.85897 $\pm$ 0.04958 & 0.86643 $\pm$ 0.00344 & 0.86491 $\pm$ 0.00264 \\
+ZDT4 & IGD & \textbf{0.00463 $\pm$ 0.00038} & 0.01163 $\pm$ 0.03160 & 0.00604 $\pm$ 0.00171 & 0.00668 $\pm$ 0.00135 \\
+ZDT6 & HV & \textbf{0.50342 $\pm$ 0.00028} & 0.50329 $\pm$ 0.00039 & 0.50338 $\pm$ 0.00033 & 0.48017 $\pm$ 0.00792 \\
+ZDT6 & IGD & 0.00390 $\pm$ 0.00026 & 0.00394 $\pm$ 0.00039 & \textbf{0.00388 $\pm$ 0.00026} & 0.01797 $\pm$ 0.00516 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

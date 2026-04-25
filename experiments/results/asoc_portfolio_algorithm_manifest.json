@@ -1,0 +1,55 @@
+{
+  "active_result_family": "asoc_portfolio",
+  "expected_algorithms": [
+    "FITO",
+    "DNSGA-II-A",
+    "DNSGA-II-B",
+    "KGB-DMOEA",
+    "MDDM-DMOEA",
+    "NSGA-II",
+    "PPS-DMOEA"
+  ],
+  "expected_families": [
+    "main",
+    "budget"
+  ],
+  "expected_universes": [
+    "tech14",
+    "market20"
+  ],
+  "expected_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "observed_algorithms": [
+    "DNSGA-II-A",
+    "DNSGA-II-B",
+    "FITO",
+    "KGB-DMOEA",
+    "MDDM-DMOEA",
+    "NSGA-II",
+    "PPS-DMOEA"
+  ],
+  "unexpected_algorithms": [],
+  "missing_entries": [],
+  "coverage_ok": true,
+  "legacy_note": "portfolio_case_* files are archived five-algorithm legacy results and are not valid for ASOC tables."
+}

@@ -1,0 +1,7 @@
+Dynamic Fixed-Budget Pit-Stop Probe
+=================================
+Calibrated pop sizes reused from asoc_dynamic_budget_calibration.json.
+
+Overall average ranks:
+  - FITO: 1.386
+  - FITO-noPS: 1.614

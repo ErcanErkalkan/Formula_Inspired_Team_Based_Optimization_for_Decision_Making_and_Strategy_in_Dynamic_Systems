@@ -1,0 +1,75 @@
+{
+  "protocol": "moderate_t10_n10",
+  "problems": [
+    "df1",
+    "df4",
+    "df7",
+    "df9"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "lambda_1_values": [
+    0.05,
+    0.08,
+    0.1,
+    0.12,
+    0.15
+  ],
+  "stagnation_limit_values": [
+    4,
+    6,
+    8,
+    10,
+    12
+  ],
+  "default_lambda_1": 0.1,
+  "default_stagnation_limit": 8,
+  "best_by_parameter": {
+    "lambda_1": {
+      "protocol": "moderate_t10_n10",
+      "problem": "OVERALL",
+      "parameter": "lambda_1",
+      "value": 0.15,
+      "mean_migd": 0.1782958007293301,
+      "std_migd": 0.09058167557785371,
+      "ci95_low": 0.1502242486374844,
+      "ci95_high": 0.2063673528211758,
+      "mean_tail_igd": 0.09346153817244471,
+      "mean_pitstop_count": 5.275,
+      "mean_redeployment_count": 6.0,
+      "mean_runtime_sec": 1.0275049850000868,
+      "n_runs": 40
+    },
+    "stagnation_limit": {
+      "protocol": "moderate_t10_n10",
+      "problem": "OVERALL",
+      "parameter": "stagnation_limit",
+      "value": 4.0,
+      "mean_migd": 0.1776203293605597,
+      "std_migd": 0.11081263714450891,
+      "ci95_low": 0.14327913732373002,
+      "ci95_high": 0.21196152139738936,
+      "mean_tail_igd": 0.0880357936578788,
+      "mean_pitstop_count": 11.0,
+      "mean_redeployment_count": 6.0,
+      "mean_runtime_sec": 1.0361375824998504,
+      "n_runs": 40
+    }
+  },
+  "outputs": {
+    "raw": "experiments/results/asoc_dynamic_sensitivity_raw.csv",
+    "summary": "experiments/results/asoc_dynamic_sensitivity_summary.csv",
+    "latex_table": "experiments/results/asoc_dynamic_sensitivity_table.tex",
+    "figure": "experiments/results/sensitivity_analysis.pdf"
+  }
+}

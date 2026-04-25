@@ -1,0 +1,18 @@
+\begin{table}[!t]
+\centering
+\caption{Average MIGD ranks for FITO component ablations across dynamic protocols. Lower is better.}
+\label{tab:dynamic-ablation-ranks}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccc}
+\toprule
+Protocol & FITO & FITO-noLS & FITO-noRD & FITO-noPA & FITO-noPS & FITO+BR & FITO+MB \\
+\midrule
+fast\_t5\_n10 & \textbf{2.506} & 5.628 & 5.639 & 4.756 & \textbf{2.506} & 3.183 & 3.783 \\
+moderate\_t10\_n10 & \textbf{2.350} & 6.433 & 4.994 & 4.267 & 3.583 & 3.100 & 3.272 \\
+severe\_t10\_n20 & \textbf{2.694} & 6.489 & 4.328 & 4.122 & 3.744 & 3.500 & 3.122 \\
+\midrule
+Overall & \textbf{2.517} & 6.183 & 4.987 & 4.381 & 3.278 & 3.261 & 3.393 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

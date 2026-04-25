@@ -1,0 +1,36 @@
+\begin{table}[!t]
+\centering
+\caption{Dynamic generation-matched evaluation and runtime summary.}
+\label{tab:dynamic-eval-budget}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccc}
+\toprule
+Protocol & Algorithm & Mean evals & Mean pop & Mean runtime (s) \\
+\midrule
+fast\_t5\_n10 & FITO & 12196.0 & 100.0 & 0.984 \\
+fast\_t5\_n10 & DNSGA-II-A & 7790.0 & 100.0 & 1.082 \\
+fast\_t5\_n10 & DNSGA-II-B & 7790.0 & 100.0 & 1.075 \\
+fast\_t5\_n10 & KGB-DMOEA & 7943.0 & 100.0 & 3.470 \\
+fast\_t5\_n10 & MDDM-DMOEA & 6000.0 & 100.0 & 1.032 \\
+fast\_t5\_n10 & NSGA-II & 6000.0 & 100.0 & 0.937 \\
+fast\_t5\_n10 & PPS-DMOEA & 6000.0 & 100.0 & 1.035 \\
+\midrule
+moderate\_t10\_n10 & FITO & 12207.9 & 100.0 & 0.964 \\
+moderate\_t10\_n10 & DNSGA-II-A & 7190.0 & 100.0 & 1.080 \\
+moderate\_t10\_n10 & DNSGA-II-B & 7190.0 & 100.0 & 1.081 \\
+moderate\_t10\_n10 & KGB-DMOEA & 7266.5 & 100.0 & 6.180 \\
+moderate\_t10\_n10 & MDDM-DMOEA & 6000.0 & 100.0 & 1.020 \\
+moderate\_t10\_n10 & NSGA-II & 6000.0 & 100.0 & 0.978 \\
+moderate\_t10\_n10 & PPS-DMOEA & 6000.0 & 100.0 & 1.021 \\
+\midrule
+severe\_t10\_n20 & FITO & 12208.1 & 100.0 & 0.953 \\
+severe\_t10\_n20 & DNSGA-II-A & 7190.0 & 100.0 & 1.062 \\
+severe\_t10\_n20 & DNSGA-II-B & 7190.0 & 100.0 & 1.052 \\
+severe\_t10\_n20 & KGB-DMOEA & 7266.4 & 100.0 & 8.037 \\
+severe\_t10\_n20 & MDDM-DMOEA & 6000.0 & 100.0 & 1.007 \\
+severe\_t10\_n20 & NSGA-II & 6000.0 & 100.0 & 0.945 \\
+severe\_t10\_n20 & PPS-DMOEA & 6000.0 & 100.0 & 0.993 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

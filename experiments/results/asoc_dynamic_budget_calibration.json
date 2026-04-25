@@ -1,0 +1,29 @@
+{
+  "fast_t5_n10": {
+    "FITO": 66,
+    "DNSGA-II-A": 103,
+    "DNSGA-II-B": 103,
+    "KGB-DMOEA": 101,
+    "MDDM-DMOEA": 133,
+    "NSGA-II": 133,
+    "PPS-DMOEA": 133
+  },
+  "moderate_t10_n10": {
+    "FITO": 66,
+    "DNSGA-II-A": 111,
+    "DNSGA-II-B": 111,
+    "KGB-DMOEA": 110,
+    "MDDM-DMOEA": 133,
+    "NSGA-II": 133,
+    "PPS-DMOEA": 133
+  },
+  "severe_t10_n20": {
+    "FITO": 66,
+    "DNSGA-II-A": 111,
+    "DNSGA-II-B": 111,
+    "KGB-DMOEA": 110,
+    "MDDM-DMOEA": 133,
+    "NSGA-II": 133,
+    "PPS-DMOEA": 133
+  }
+}

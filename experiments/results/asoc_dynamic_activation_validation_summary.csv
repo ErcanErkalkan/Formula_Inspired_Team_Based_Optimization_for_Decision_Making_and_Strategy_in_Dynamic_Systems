@@ -1,0 +1,15 @@
+family,algorithm,environment_change_count,change_response_count,response_activation_rate,replaced_count,response_evaluation_count,n_evals
+budget,DNSGA-II-A,8.0,8.0,1.0,0.0,0.0,8044.333333333333
+budget,DNSGA-II-B,8.0,8.0,1.0,0.0,0.0,8044.333333333333
+budget,FITO,8.0,8.0,1.0,40.0,0.0,8051.777777777777
+budget,KGB-DMOEA,8.0,8.0,1.0,0.0,0.0,8015.009259259259
+budget,MDDM-DMOEA,8.0,8.0,1.0,536.0,1064.0,7980.0
+budget,NSGA-II,8.0,0.0,0.0,0.0,0.0,7980.0
+budget,PPS-DMOEA,8.0,8.0,1.0,536.0,1064.0,7980.0
+main,DNSGA-II-A,8.0,8.0,1.0,0.0,0.0,7390.0
+main,DNSGA-II-B,8.0,8.0,1.0,0.0,0.0,7390.0
+main,FITO,8.0,8.0,1.0,64.0,0.0,12203.977777777778
+main,KGB-DMOEA,8.0,8.0,1.0,0.0,0.0,7491.964814814814
+main,MDDM-DMOEA,8.0,8.0,1.0,400.0,800.0,6000.0
+main,NSGA-II,8.0,0.0,0.0,0.0,0.0,6000.0
+main,PPS-DMOEA,8.0,8.0,1.0,400.0,800.0,6000.0
