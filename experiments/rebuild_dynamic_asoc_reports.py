@@ -112,7 +112,7 @@ def main() -> None:
         rank_table_latex(
             main_ranks,
             MAIN_ALGORITHMS,
-            caption="Average MIGD ranks across dynamic protocols. Lower is better.",
+            caption="Auxiliary generation-matched average MIGD ranks across dynamic protocols. Lower is better.",
             label="tab:dynamic-protocol-ranks",
         ),
         encoding="utf-8",
@@ -130,7 +130,7 @@ def main() -> None:
         rank_table_latex(
             budget_ranks,
             MAIN_ALGORITHMS,
-            caption="Average MIGD ranks in the fixed-budget dynamic auxiliary study. Lower is better.",
+            caption="Primary fixed-budget average MIGD ranks across dynamic protocols. Lower is better.",
             label="tab:dynamic-budget-ranks",
         ),
         encoding="utf-8",
@@ -139,7 +139,7 @@ def main() -> None:
         eval_table_latex(
             eval_budget,
             family_name="main",
-            caption="Dynamic generation-matched evaluation and runtime summary.",
+            caption="Auxiliary generation-matched evaluation and runtime diagnostic. Different internal response mechanisms lead to unequal objective-evaluation counts; this table is therefore not used as the primary fairness claim.",
             label="tab:dynamic-eval-budget",
         ),
         encoding="utf-8",
@@ -148,7 +148,7 @@ def main() -> None:
         eval_table_latex(
             eval_budget,
             family_name="budget",
-            caption="Dynamic fixed-budget calibration summary.",
+            caption="Primary fixed-budget calibration summary. Population sizes are protocol-specific and calibrated to approximately 8000 objective evaluations.",
             label="tab:dynamic-fixed-budget",
         ),
         encoding="utf-8",
