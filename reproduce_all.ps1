@@ -1,4 +1,6 @@
 param(
+    [switch]$QuickSmoke,
+    [switch]$TablesOnly,
     [switch]$SkipStatic,
     [switch]$SkipDynamic,
     [switch]$SkipPortfolio,
@@ -13,6 +15,38 @@ $manuscript = Join-Path $root "manuscript"
 
 Push-Location $root
 try {
+    if ($QuickSmoke) {
+        Write-Host "[smoke] Running lightweight reproducibility smoke test..."
+        python experiments/smoke_test.py
+        return
+    }
+
+    if ($TablesOnly) {
+        Write-Host "[tables] Rebuilding dynamic and portfolio report tables from existing artifacts..."
+        Push-Location $experiments
+        try {
+            python rebuild_dynamic_asoc_reports.py
+            python rebuild_portfolio_reports.py
+        }
+        finally {
+            Pop-Location
+        }
+
+        if (-not $SkipManuscript) {
+            Write-Host "[tables] Rebuilding graphical abstract and manuscript PDF..."
+            Push-Location $manuscript
+            try {
+                python build_graphical_abstract.py
+                pdflatex -interaction=nonstopmode -halt-on-error asoc_fito.tex
+                pdflatex -interaction=nonstopmode -halt-on-error asoc_fito.tex
+            }
+            finally {
+                Pop-Location
+            }
+        }
+        return
+    }
+
     if (-not $SkipStatic) {
         Write-Host "[1/4] Running static ZDT sanity benchmarks..."
         Push-Location $experiments

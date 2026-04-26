@@ -22,9 +22,19 @@ var/
 .venv/
 venv/
 ENV/
+.pytest_cache/
 
-# Manuscript directory as requested
-manuscript/
+# LaTeX build intermediates; manuscript sources and PDFs remain tracked
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.blg
 
 # OS generated files
 .DS_Store

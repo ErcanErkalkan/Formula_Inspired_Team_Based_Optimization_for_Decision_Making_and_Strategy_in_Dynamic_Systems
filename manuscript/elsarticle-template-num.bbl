@@ -1,0 +1,88 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{laterza2024smart}
+V.~Laterza, F.~Marchegiani, F.~Aisoni, M.~Ammendola,
+  \href{https://www.mdpi.com/2227-9032/12/15/1530}{Smart operating room in
+  digestive surgery: A narrative review}, Healthcare 12~(15) (2024).
+\newline\urlprefix\url{https://www.mdpi.com/2227-9032/12/15/1530}
+
+\bibitem{ouellette2024healthy}
+R.~Ouellette, M.~Zahn,
+  \href{https://psycnet.apa.org/record/2023-98303-001}{Healthy educators need
+  healthy schools: Supporting educator work-related well-being through
+  multitiered systems of support}, School Psychology (2024).
+\newline\urlprefix\url{https://psycnet.apa.org/record/2023-98303-001}
+
+\bibitem{rosenberg2024clinicians}
+A.~Rosenberg, J.~Eddison, O.~Millerchip,
+  \href{https://www.researchsquare.com/article/rs-4848929/latest}{Clinicians'
+  experience of barriers and facilitators to care delivery in an ecpr service
+  for out-of-hospital cardiac arrest: A qualitative study}, Research Square
+  (2024).
+\newline\urlprefix\url{https://www.researchsquare.com/article/rs-4848929/latest}
+
+\bibitem{evans2021incorporating}
+N.~Evans, J.~Minhas, Z.~Mehdi, A.~Mistri,
+  \href{https://www.ahajournals.org/doi/abs/10.1161/STROKEAHA.120.031056}{Incorporating
+  simulation-based education into stroke training}, Stroke 52~(6) (2021).
+\newline\urlprefix\url{https://www.ahajournals.org/doi/abs/10.1161/STROKEAHA.120.031056}
+
+\bibitem{peng2024active}
+P.~Peng, W.~Wang, M.~Filderman,
+  \href{https://journals.sagepub.com/doi/10.3102/00346543231171345}{The active
+  ingredient in reading comprehension strategy intervention for struggling
+  readers: A bayesian network meta-analysis}, Review of Educational Research
+  (2024).
+\newline\urlprefix\url{https://journals.sagepub.com/doi/10.3102/00346543231171345}
+
+\bibitem{malik2023managing}
+A.~Malik, S.~Kumar, S.~Basu, R.~Bebenroth, Managing disruptive technologies for
+  innovative healthcare solutions: the role of high-involvement work systems
+  and technologically-mediated relational strategies, Journal of Business
+  Research (2023).
+
+\bibitem{pearson2024effectiveness}
+D.~Pearson, B.~Covell, B.~Johnson, Effectiveness of team-focused cpr on
+  in-hospital cpr quality and outcomes, Resuscitation (2024).
+
+\bibitem{swol2022human}
+J.~Swol, B.~Zakhary, Human factors in ecls--a keystone for safety and
+  quality--a narrative review for ecls providers, Artificial Organs (2022).
+
+\bibitem{goldhaber2023surgical}
+N.~Goldhaber, R.~Schaefer, R.~Martinez, Surgical pit crew: initiative to
+  optimise measurement and accountability for operating room turnover time, BMJ
+  Health \& Care (2023).
+
+\bibitem{mascagni2021or}
+P.~Mascagni, N.~Padoy, Or black box and surgical control tower: recording and
+  streaming data and analytics to improve surgical care, Journal of Visceral
+  Surgery (2021).
+
+\bibitem{ramos2022agile}
+C.~Ramos, I.~Pavlichenko, Creating agile organizations: A systemic approach,
+  Journal of Agile Methods (2022).
+
+\bibitem{miller2020cognitive}
+T.~Miller, A.~McCann, M.~Stacey, Cognitive psychology, the multidisciplinary
+  operating theatre team, and managing a cannot intubate, cannot oxygenate
+  emergency, British Journal of Anaesthesia (2020).
+
+\bibitem{wooldridge2023team}
+A.~Wooldridge, B.~Johnson, Team cognition in sports and its application to
+  optimization models, Sports Optimization Letters (2023).
+
+\bibitem{bastin2023adaptation}
+K.~Bastin, Adaptive real-time control strategies for autonomous systems in
+  dynamic environments, Journal of Robotics and Autonomous Systems (2023).
+
+\bibitem{delardes2024multiobjective}
+B.~Delardes, I.~Pavlichenko, Multi-objective optimization for complex systems:
+  A unified framework, Optimization and Control Letters (2024).
+
+\end{thebibliography}

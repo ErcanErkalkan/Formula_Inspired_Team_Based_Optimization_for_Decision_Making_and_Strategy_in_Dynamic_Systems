@@ -1,0 +1,7 @@
+Declaration of generative AI and AI-assisted technologies in the writing process
+
+During the preparation of this work, the author used AI-assisted tools for
+language editing, code inspection, and consistency checks. All technical
+decisions, experimental redesign, verification, and final manuscript content
+were reviewed and approved by the author, who takes full responsibility for
+the submitted work.

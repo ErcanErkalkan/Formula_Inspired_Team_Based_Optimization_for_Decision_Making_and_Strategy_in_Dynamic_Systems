@@ -1,0 +1,15 @@
+[project]
+name = "fito-reproducibility"
+version = "1.0.0"
+description = "Reproducibility package for Formula-Inspired Team-Based Evolutionary Optimization with Reactive Redeployment."
+readme = "README.md"
+requires-python = ">=3.13"
+license = {text = "Research artifact; see repository for manuscript and data-availability details."}
+authors = [
+  {name = "Ercan Erkalkan"}
+]
+
+[tool.fito]
+primary_dynamic_evidence = "approximately fixed-budget DF1-DF9 benchmark suite"
+secondary_application_evidence = "walk-forward portfolio stress test"
+repository = "https://github.com/ErcanErkalkan/Formula_Inspired_Team_Based_Optimization_for_Decision_Making_and_Strategy_in_Dynamic_Systems"

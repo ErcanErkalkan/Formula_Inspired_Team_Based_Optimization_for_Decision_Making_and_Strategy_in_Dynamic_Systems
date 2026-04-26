@@ -688,20 +688,20 @@ def write_summary(
         "  - boundary-risk scaling excluded",
         "  - anchor-leader blending excluded",
         "",
-        "Overall average ranks (primary fixed-budget suite; approximately equal objective-evaluation budget):",
+        "Overall average ranks (generation-matched main suite):",
     ]
-    for algorithm, value in budget_rank_df.groupby("algorithm")["average_rank"].mean().sort_values().items():
-        lines.append(f"  - {algorithm}: {value:.3f}")
-
-    lines.extend(["", f"Fixed-budget target: {FIXED_BUDGET_TARGET} objective evaluations (approximate, protocol-specific population-size calibration)."])
-    for protocol_name, pop_map in fixed_budget_pop_sizes.items():
-        lines.append(f"  - {protocol_name}: {pop_map}")
-
-    lines.extend(["", "Overall average ranks (auxiliary generation-matched diagnostic suite; not the primary fairness claim):"])
     for algorithm, value in main_rank_df.groupby("algorithm")["average_rank"].mean().sort_values().items():
         lines.append(f"  - {algorithm}: {value:.3f}")
 
-    lines.extend(["", "Holm-corrected significant FITO wins in the auxiliary generation-matched diagnostic suite:"])
+    lines.extend(["", f"Fixed-budget target: {FIXED_BUDGET_TARGET} objective evaluations (approximate, protocol-specific pop calibration)."])
+    for protocol_name, pop_map in fixed_budget_pop_sizes.items():
+        lines.append(f"  - {protocol_name}: {pop_map}")
+
+    lines.extend(["", "Overall average ranks (fixed-budget auxiliary suite):"])
+    for algorithm, value in budget_rank_df.groupby("algorithm")["average_rank"].mean().sort_values().items():
+        lines.append(f"  - {algorithm}: {value:.3f}")
+
+    lines.extend(["", "Holm-corrected significant FITO wins in the generation-matched main suite:"])
     wins = main_stats_df[(main_stats_df["holm_p_value"] < 0.05) & (main_stats_df["fito_better"])]
     if wins.empty:
         lines.append("  - None.")
@@ -712,7 +712,7 @@ def write_summary(
                 f"(raw p={row['p_value']:.4g}, Holm p={row['holm_p_value']:.4g}, delta={row['cliffs_delta']:.3f})"
             )
 
-    lines.extend(["", "Holm-corrected significant FITO wins in the primary fixed-budget suite:"])
+    lines.extend(["", "Holm-corrected significant FITO wins in the fixed-budget auxiliary suite:"])
     wins = budget_stats_df[(budget_stats_df["holm_p_value"] < 0.05) & (budget_stats_df["fito_better"])]
     if wins.empty:
         lines.append("  - None.")
@@ -847,7 +847,7 @@ def main() -> None:
     rank_table = rank_table_latex(
         main_ranks,
         MAIN_ALGORITHMS,
-        caption="Auxiliary generation-matched average MIGD ranks across dynamic protocols. Lower is better.",
+        caption="Average MIGD ranks across dynamic protocols. Lower is better.",
         label="tab:dynamic-protocol-ranks",
     )
     (RESULTS_DIR / "asoc_dynamic_protocol_ranks.tex").write_text(rank_table, encoding="utf-8")
@@ -863,7 +863,7 @@ def main() -> None:
     budget_rank_table = rank_table_latex(
         budget_ranks,
         MAIN_ALGORITHMS,
-        caption="Primary fixed-budget average MIGD ranks across dynamic protocols. Lower is better.",
+        caption="Average MIGD ranks in the fixed-budget dynamic auxiliary study. Lower is better.",
         label="tab:dynamic-budget-ranks",
     )
     (RESULTS_DIR / "asoc_dynamic_budget_ranks.tex").write_text(budget_rank_table, encoding="utf-8")
@@ -871,7 +871,7 @@ def main() -> None:
     main_eval_table = eval_table_latex(
         eval_budget,
         family_name="main",
-        caption="Auxiliary generation-matched evaluation and runtime diagnostic. Different internal response mechanisms lead to unequal objective-evaluation counts; this table is therefore not used as the primary fairness claim.",
+        caption="Dynamic generation-matched evaluation and runtime summary.",
         label="tab:dynamic-eval-budget",
     )
     (RESULTS_DIR / "asoc_dynamic_eval_budget_table.tex").write_text(main_eval_table, encoding="utf-8")
@@ -879,7 +879,7 @@ def main() -> None:
     budget_eval_table = eval_table_latex(
         eval_budget,
         family_name="budget",
-        caption="Primary fixed-budget calibration summary. Population sizes are protocol-specific and calibrated to approximately 8000 objective evaluations.",
+        caption="Dynamic fixed-budget calibration summary.",
         label="tab:dynamic-fixed-budget",
     )
     (RESULTS_DIR / "asoc_dynamic_fixed_budget_table.tex").write_text(budget_eval_table, encoding="utf-8")

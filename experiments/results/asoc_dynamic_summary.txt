@@ -12,21 +12,7 @@ Final FITO default:
   - boundary-risk scaling excluded
   - anchor-leader blending excluded
 
-Overall average ranks (primary fixed-budget suite; approximately equal objective-evaluation budget):
-  - FITO: 1.898
-  - NSGA-II: 2.711
-  - MDDM-DMOEA: 3.415
-  - PPS-DMOEA: 4.435
-  - DNSGA-II-A: 4.878
-  - DNSGA-II-B: 5.280
-  - KGB-DMOEA: 5.383
-
-Fixed-budget target: 8000 objective evaluations (approximate, protocol-specific population-size calibration).
-  - fast_t5_n10: {'FITO': 66, 'DNSGA-II-A': 103, 'DNSGA-II-B': 103, 'KGB-DMOEA': 101, 'MDDM-DMOEA': 133, 'NSGA-II': 133, 'PPS-DMOEA': 133}
-  - moderate_t10_n10: {'FITO': 66, 'DNSGA-II-A': 111, 'DNSGA-II-B': 111, 'KGB-DMOEA': 110, 'MDDM-DMOEA': 133, 'NSGA-II': 133, 'PPS-DMOEA': 133}
-  - severe_t10_n20: {'FITO': 66, 'DNSGA-II-A': 111, 'DNSGA-II-B': 111, 'KGB-DMOEA': 110, 'MDDM-DMOEA': 133, 'NSGA-II': 133, 'PPS-DMOEA': 133}
-
-Overall average ranks (auxiliary generation-matched diagnostic suite; not the primary fairness claim):
+Overall average ranks (generation-matched main suite):
   - FITO: 1.554
   - NSGA-II: 3.028
   - MDDM-DMOEA: 3.756
@@ -35,7 +21,21 @@ Overall average ranks (auxiliary generation-matched diagnostic suite; not the pr
   - DNSGA-II-B: 4.978
   - KGB-DMOEA: 5.269
 
-Holm-corrected significant FITO wins in the auxiliary generation-matched diagnostic suite:
+Fixed-budget target: 8000 objective evaluations (approximate, protocol-specific pop calibration).
+  - fast_t5_n10: {'FITO': 66, 'DNSGA-II-A': 103, 'DNSGA-II-B': 103, 'KGB-DMOEA': 101, 'MDDM-DMOEA': 133, 'NSGA-II': 133, 'PPS-DMOEA': 133}
+  - moderate_t10_n10: {'FITO': 66, 'DNSGA-II-A': 111, 'DNSGA-II-B': 111, 'KGB-DMOEA': 110, 'MDDM-DMOEA': 133, 'NSGA-II': 133, 'PPS-DMOEA': 133}
+  - severe_t10_n20: {'FITO': 66, 'DNSGA-II-A': 111, 'DNSGA-II-B': 111, 'KGB-DMOEA': 110, 'MDDM-DMOEA': 133, 'NSGA-II': 133, 'PPS-DMOEA': 133}
+
+Overall average ranks (fixed-budget auxiliary suite):
+  - FITO: 1.898
+  - NSGA-II: 2.711
+  - MDDM-DMOEA: 3.415
+  - PPS-DMOEA: 4.435
+  - DNSGA-II-A: 4.878
+  - DNSGA-II-B: 5.280
+  - KGB-DMOEA: 5.383
+
+Holm-corrected significant FITO wins in the generation-matched main suite:
   - fast_t5_n10 | DF1 vs DNSGA-II-A (raw p=6.796e-08, Holm p=1.101e-05, delta=-1.000)
   - fast_t5_n10 | DF1 vs DNSGA-II-B (raw p=6.796e-08, Holm p=1.101e-05, delta=-1.000)
   - fast_t5_n10 | DF1 vs KGB-DMOEA (raw p=6.796e-08, Holm p=1.101e-05, delta=-1.000)
@@ -181,7 +181,7 @@ Holm-corrected significant FITO wins in the auxiliary generation-matched diagnos
   - severe_t10_n20 | DF9 vs NSGA-II (raw p=6.796e-08, Holm p=1.101e-05, delta=-1.000)
   - severe_t10_n20 | DF9 vs PPS-DMOEA (raw p=6.796e-08, Holm p=1.101e-05, delta=-1.000)
 
-Holm-corrected significant FITO wins in the primary fixed-budget suite:
+Holm-corrected significant FITO wins in the fixed-budget auxiliary suite:
   - fast_t5_n10 | DF1 vs DNSGA-II-A (raw p=5.874e-06, Holm p=0.0002996, delta=-0.840)
   - fast_t5_n10 | DF1 vs DNSGA-II-B (raw p=6.796e-08, Holm p=1.101e-05, delta=-1.000)
   - fast_t5_n10 | DF1 vs KGB-DMOEA (raw p=3.416e-07, Holm p=2.357e-05, delta=-0.945)

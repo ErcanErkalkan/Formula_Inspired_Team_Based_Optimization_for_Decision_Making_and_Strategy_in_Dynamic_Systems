@@ -1,0 +1,396 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{url}
+\emergencystretch=2em
+
+\journal{Applied Soft Computing}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Formula-Inspired Team-Based Evolutionary Optimization with Reactive Redeployment for Dynamic Multi-Objective Tracking}
+
+\author{Ercan Erkalkan\corref{cor1}}
+\cortext[cor1]{Corresponding author.}
+\ead{ercan.erkalkan@marmara.edu.tr}
+\affiliation{
+  organization={Department of Computer Technologies, Marmara University},
+  addressline={Istanbul},
+  country={Turkey}
+}
+
+\begin{abstract}
+Dynamic multi-objective optimization requires rapid recovery after environmental change under transparent and comparable budgets. However, change-response mechanisms such as redeployment, prediction, and restart policies can create unequal objective-evaluation counts when algorithms are compared only under a common generation horizon. This paper presents Formula-Inspired Team Optimization (FITO), a reactive multi-objective evolutionary algorithm formulated as bipartite Differential Evolution with asymmetric elitism, leader-support coordination, predictive leader anchors, stagnation-triggered local random restart, and post-change redeployment guided by recent leader motion. The main empirical evidence is therefore based on an approximately fixed objective-evaluation budget rather than on a generation-matched protocol. Across DF1--DF9, three dynamic protocols, and 20 independent runs per condition, the primary fixed-budget study calibrates protocol-specific population sizes to approximately 8000 objective evaluations. Under this evaluation-balanced setting, FITO obtains the best overall average MIGD rank (1.898), ahead of NSGA-II (2.711), MDDM-DMOEA (3.415), PPS-DMOEA (4.435), DNSGA-II-A (4.878), DNSGA-II-B (5.280), and KGB-DMOEA (5.383). Holm-corrected pairwise tests in the primary fixed-budget suite give 131 significant FITO wins, 12 significant losses, and 19 non-significant comparisons. A dedicated failure-mode analysis attributes the systematic DF2 losses to a moving decision-variable ownership pattern that invalidates recent leader-motion transfer, and the selected DF7 losses to a time-dependent logistic decision-space linkage that can preserve a smooth objective front while changing the associated decision manifold. A generation-matched 100-population suite is retained only as an auxiliary diagnostic comparison because FITO performs approximately 12,204 objective evaluations on average, whereas the baselines range from 6000 to approximately 7492 evaluations. The auxiliary diagnostic suite shows the same first-rank pattern, but it is not used as the primary fairness claim. Ablations support leader-support coordination, redeployment, predictive anchors, and pit-stop restart, while rejecting boundary-risk scaling and anchor-leader blending. The walk-forward portfolio suite is retained only as a secondary application stress test: FITO is strong on the 14-asset technology universe, NSGA-II is stronger on the broader 20-asset market universe for final wealth, MDDM-DMOEA dominates several frontier-transfer counts, and sensitivity winners are split across algorithms. Consequently, FITO is positioned as a competitive budget-aware dynamic tracking method rather than a universally dominant optimizer or a general finance method.
+\end{abstract}
+
+%%Graphical abstract
+\begin{graphicalabstract}
+\includegraphics[width=\textwidth]{graphical_abstract.png}
+\end{graphicalabstract}
+
+%%Research highlights
+\begin{highlights}
+\item FITO enables reactive dynamic multi-objective tracking via bipartite DE.
+\item Fixed-budget DF1--DF9 tests show FITO ranks first by average MIGD.
+\item Leader-support coordination, redeployment, and pit-stop restart are validated.
+\item DF2/DF7 failure modes reveal limits of leader-motion transfer.
+\item Portfolio experiments are framed as a secondary walk-forward stress test.
+\end{highlights}
+
+\begin{keyword}
+Dynamic multi-objective optimization \sep evolutionary computation \sep restart strategy \sep Pareto tracking \sep benchmark design \sep walk-forward portfolio optimization
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Many engineering and decision-support problems are intrinsically dynamic. Scheduling, routing, resource dispatch, adaptive control, and online planning are often exposed to changes in objectives, constraints, or operating conditions while optimization is still in progress. In such settings, a useful optimizer must do more than converge to a static Pareto front. It must repeatedly recover after environmental changes and re-establish a high-quality approximation of the moving trade-off surface \cite{Farina2004Dynamic,Gee2017Benchmark}.
+
+Classical multi-objective evolutionary algorithms, including NSGA-II \cite{Deb2002NSGAII}, MOEA/D \cite{Zhang2007MOEAD}, and RVEA \cite{Cheng2016RVEA}, provide strong convergence-diversity mechanisms in static problems. For dynamic settings, several extensions rely on explicit change response or prediction. DNSGA-II introduced change-triggered diversity injection into the NSGA-II framework \cite{Deb2007DNSGAII}. More recent methods exploit historical knowledge more aggressively, for example through Bayesian classification \cite{Ye2022KGB} or predictive population estimation \cite{Gao2024MDDM}. These studies show that dynamic response quality is tightly linked to how an algorithm reuses past information while still preserving enough flexibility to avoid negative transfer.
+
+This study explores a reactive design inspired by Formula 1 team strategy. While the conceptual framing draws from motor racing, the core architecture is mathematically grounded as a bipartite Differential Evolution with asymmetric elitism and local random restart. Instead of learning an external predictive model of the next environment, FITO relies on an asymmetric bipartite population (leader-support) structure. This structure modifies traditional elitism by using the elite set not just for preservation, but as active spatial anchors for a directed variant of the DE/current-to-best/1 mutation strategy. Furthermore, the framework incorporates a targeted local random restart (conceptually a pit-stop restart) after internal stagnation, and post-change redeployment informed by recent leader motion. Component testing is used to prune the design: boundary-risk step scaling and anchor-leader blending are retained only if they improve the evidence, and in the final reported method they are rejected.
+
+The main contributions are:
+\begin{itemize}
+    \item A dynamic MOEA architecture formalized as a bipartite Differential Evolution that combines asymmetric leader-support search, a directed DE/current-to-best/1 variant, stagnation-triggered local random restart (pit-stop), and change-triggered redeployment with predictive leader anchors.
+    \item A broader dynamic benchmark design covering DF1--DF9 under three change protocols, 20 independent runs, a primary fixed-budget study, an auxiliary generation-matched diagnostic study, Holm-corrected pairwise testing, and reported effect sizes.
+    \item A one-at-a-time component ablation showing that leader-support coordination, redeployment, and pit-stop restart are useful under the expanded protocols, while boundary-risk scaling and anchor-leader blending should be excluded from the default.
+    \item A failure-mode analysis of DF2 and DF7 showing where leader-motion transfer can become negative transfer and where local pit-stop restart is insufficient.
+    \item A secondary two-universe walk-forward portfolio stress test with three decision rules, three transaction-cost settings, and deterministic equal-weight and rolling-minimum-variance references, used only as an application case study rather than as a real-world validation claim or a claim of general financial superiority.
+\end{itemize}
+
+\section{Related work}
+\label{sec:related}
+
+Dynamic multi-objective optimization (DMOO) extends static multi-objective evolutionary optimization to environments in which objective functions, constraints, Pareto-optimal sets, or Pareto fronts vary over time. The core difficulty is therefore not only convergence and diversity preservation, but also repeated recovery after environmental change. Recent surveys emphasize that competitive DMOEAs must balance four coupled requirements: detecting or anticipating environmental change, transferring useful historical information without negative transfer, restoring diversity when the search stagnates, and evaluating tracking quality under protocols that do not hide budget or benchmark bias \cite{Azzouz2017Survey,Jiang2022Survey,Shao2026Benchmark}. This section expands the positioning of FITO along these axes.
+
+\subsection{Prediction-based response strategies}
+
+Prediction-based DMOEAs aim to estimate promising search regions after an environmental change and thereby reduce the recovery time needed to track the new Pareto-optimal set. The population prediction strategy (PPS) is a canonical example: historical population displacement is used to initialize a new population that approximates the next environment before ordinary evolutionary search resumes \cite{Zhou2014Population}. Later work refined this idea by predicting representative points, knee points, center points, or multidirectional movements rather than moving the whole population uniformly \cite{Rong2020Multi,Wu2023DSSP,Gao2024CenterMultiDirection,Gao2024MDDM}. The 2024 MOEA/D-MDDM framework is especially relevant because it uses a multidirectional difference model assisted by Pareto-optimal-solution estimation to form a predictive initial population for the new environment \cite{Gao2024MDDM}. Decision-variable-aware prediction has also become increasingly important: DVC-type methods classify decision variables according to their contribution to diversity and convergence, then apply different response policies after change \cite{Liu2021Heterogeneous,Wu2023DVC}.
+
+The benefit of prediction is fast post-change convergence, but the risk is systematic negative transfer. If the Pareto-optimal set changes in a way that invalidates the historical direction, an aggressive predictor can move the population away from the new high-quality region. This risk is central to the DF2 and DF7 behavior observed later in this study. FITO deliberately uses only a short-horizon predictive signal: the most recent displacement of the leader set. This design is less expressive than full population or model-based prediction, but it avoids committing the whole population to a learned global model whose assumptions may be invalid under abrupt topology changes.
+
+\subsection{Transfer learning, memory, and historical reuse}
+
+A second line of work reuses past search information through explicit archives, memory states, or transfer-learning modules. Memory-based approaches store previously useful solutions and retrieve them when similar environments recur, while state-based memory and diversity-maintenance strategies attempt to preserve alternative search directions for future changes \cite{Zou2021Stagnation}. Transfer-learning DMOEAs go further by mapping knowledge from previous source domains to the current target environment. Tr-DMOEA introduced transfer learning into DMOO by constructing a source-target relation across environments \cite{Jiang2018TrDMOEA}. Subsequent knowledge-guided methods include Bayesian classification over historical Pareto-set information \cite{Ye2022KGB}, transfer and maintenance mechanisms for evolving environments \cite{Lin2024KTMO}, and recent twin-population or historical-evolutionary-learning frameworks that use multiple knowledge sources to generate the initial population after change \cite{Zhao2025TMKT,Guan2026EHEL}.
+
+These methods show that historical reuse can be powerful when environments are related, but they also expose the negative-transfer problem. Several recent transfer-based papers explicitly discuss the need to reduce harmful transfer when the source environment is not sufficiently aligned with the target environment \cite{Jiang2018TrDMOEA,Li2025DST}. FITO is positioned as a lightweight alternative to heavy transfer learning: it does not train a domain adapter, density estimator, or cross-environment mapping. Instead, it performs local redeployment around current leaders and short-term predictive anchors. This makes the method simpler and reproducible, but it also explains the observed limitations on DF2 and DF7, where the decision-space relation changes faster than the leader-motion assumption can track.
+
+\subsection{Restart, diversity injection, and stagnation recovery}
+
+Diversity-injection methods remain a foundational response family. DNSGA-II introduced change-triggered replacement of part of the population by random or mutated individuals, giving the search a simple but robust way to re-expand after environmental change \cite{Deb2007DNSGAII}. More recent response frameworks adapt the intensity or type of response according to the estimated environmental change, for example by combining saved historical information, different response operators, or double-space detection in decision and objective spaces \cite{Hu2024HSS,Ma2024DSDRS,Li2024RSAS}. Stagnation recovery is closely related but not identical: an algorithm may stagnate even without an external change. Dual-population and restart-oriented designs address this problem by keeping multiple search components or injecting diversity when progress stops \cite{Li2022Restart}.
+
+FITO's pit-stop restart belongs to this restart/diversity-injection family, but with a narrower scope. Rather than restarting the whole population, only the weakest support individuals are regenerated while the leader set is preserved. This choice is intended to retain the current Pareto-front approximation while freeing local search capacity. The ablation results support this local restart under the tested DF protocols. However, the restart is not a complete safeguard against topology-dependent negative transfer: when active decision-variable roles switch, as in DF2, preserving leaders and perturbing nearby support points can still remain too local.
+
+\subsection{Benchmark protocols, indicators, and fairness of evaluation budgets}
+
+DMOO evaluation is sensitive to benchmark design, change frequency, severity, and performance indicator selection. Classical DF-style and CEC-style benchmarks remain useful because they provide controlled Pareto-set and Pareto-front dynamics \cite{Farina2004Dynamic,Gee2017Benchmark}. Nevertheless, recent benchmarking work argues that next-generation continuous DMOO test suites should include more realistic features such as heterogeneous variable contribution, non-separability, irregular change, and time-linkage effects \cite{Shao2026Benchmark}. This matters because an algorithm that performs well on smooth front motion may fail when the decision manifold changes discontinuously or when historical movement becomes deceptive.
+
+Performance is commonly reported through tracking indicators such as MIGD and hypervolume-based measures. MIGD summarizes the average distance between the obtained approximation and the true time-indexed reference front, while hypervolume provides a convergence-diversity measure based on dominated objective-space volume \cite{Zitzler2000Comparison,Jiang2022Survey}. However, indicator choice alone is insufficient for fair comparison. Dynamic response mechanisms may consume different numbers of objective evaluations even when algorithms are run for the same number of generations. This is particularly important for methods with redeployment, prediction, archive re-evaluation, or change-response operators. For this reason, the present study treats approximately fixed objective-evaluation benchmarking as the primary evidence and retains the generation-matched comparison only as an auxiliary diagnostic.
+
+\subsection{Positioning of FITO relative to recent DMOEA designs}
+
+The recent DMOO literature therefore contains several strong but distinct design philosophies: diversity-injection baselines such as DNSGA-II \cite{Deb2007DNSGAII}, prediction-oriented methods such as PPS, DSSP, DVC, and MDDM \cite{Zhou2014Population,Wu2023DSSP,Wu2023DVC,Gao2024MDDM}, memory and transfer-learning methods such as Tr-DMOEA, KGB-DMOEA, TMKT, and EHEL \cite{Jiang2018TrDMOEA,Ye2022KGB,Zhao2025TMKT,Guan2026EHEL}, adaptive change-response frameworks such as HRS-DMOA, MOEA/D-HSS, DSDRS, and RSAS \cite{Li2024HRS,Hu2024HSS,Ma2024DSDRS,Li2024RSAS}, and restart/stagnation-recovery mechanisms \cite{Li2022Restart,Zou2021Stagnation}. FITO does not claim to dominate all of these families. Its leader-support division also draws on the broader swarm-intelligence idea that different individuals can play different guidance roles, as in particle-swarm coordination, but it implements this idea through a constrained bipartite Differential Evolution topology rather than through velocity attraction \cite{Eberhart1995PSO}. Its contribution is narrower: a transparent, reproducible, budget-aware architecture that combines asymmetric leader-support coordination, short-horizon anchor redeployment, and localized pit-stop restart without requiring a heavy external prediction or transfer model.
+
+This positioning also motivates the baseline policy. Exact reimplementation of recent complex prediction and transfer-learning methods can introduce implementation bias when authoritative code is unavailable. Therefore, the empirical comparison prioritizes reproducible implementations and a fixed-budget fairness layer, while the related-work discussion explicitly situates FITO against recent 2023--2026 developments in prediction, transfer, response adaptation, restart, and benchmarking.
+
+\section{Problem formulation}
+\label{sec:problem}
+
+A dynamic multi-objective minimization problem is considered
+\begin{equation}
+\min_{x \in \Omega} \; F(x,t) = \left(f_1(x,t), f_2(x,t), \ldots, f_m(x,t)\right),
+\end{equation}
+where $\Omega \subseteq \mathbb{R}^{n}$ denotes the feasible decision space and $t$ denotes the current environment. Both the Pareto-optimal set and Pareto front may vary with time.
+
+For dynamic problems, the main performance indicator is mean inverted generational distance (MIGD),
+\begin{equation}
+\mathrm{MIGD} = \frac{1}{T}\sum_{t=1}^{T}\mathrm{IGD}\left(P_t^{\mathrm{approx}}, P_t^\star\right),
+\end{equation}
+where $P_t^{\mathrm{approx}}$ is the approximated non-dominated set and $P_t^\star$ is the true Pareto front at environment $t$. Smaller MIGD values indicate better overall tracking behavior. The mean IGD over the last 10 generations is also reported to distinguish average tracking performance from late-stage convergence.
+
+For the static sanity check, hypervolume (HV) and IGD are used on ZDT benchmarks \cite{Zitzler2000Comparison}.
+
+\section{Formula-Inspired Team Optimization}
+\label{sec:method}
+
+\subsection{Leader-support population structure}
+
+At generation $g$, the population is ranked by non-dominated sorting and crowding distance. The top
+\begin{equation}
+n_L = \max(6,\lfloor 0.1N \rfloor)
+\end{equation}
+solutions form the leader set $\mathcal{L}_g$, and the remaining solutions form the support pool. Leaders provide directional guidance, while support individuals preserve maneuverability and absorb restart operations.
+
+Offspring are generated by simulated binary crossover, polynomial mutation, and a direct team-guided correction:
+\begin{equation}
+x' = x + \lambda_1(x_L - x) + \lambda_2(x_a - x_b),
+\label{eq:update}
+\end{equation}
+where $x_L \in \mathcal{L}_g$ is a sampled leader, $x_a-x_b$ is a differential diversity term, $\lambda_1=0.10$, and $\lambda_2=0.15$. These directional and differential scaling multipliers were established through a preliminary empirical grid search targeting stable Pareto-tracking performance (see Section~\ref{subsec:sensitivity} for the sensitivity analysis of $\lambda_1$). Leader-guided pairings are used with probability 0.8; otherwise, parents are selected by tournament on dominance rank and crowding distance.
+
+It is critical to formally position this variation strategy as a directed variant of the DE/current-to-best/1 mutation strategy, adapted for a bipartite population. In classical elitism, top-ranked solutions are passively preserved into the next generation. In FITO's asymmetric elitism, the leader set $\mathcal{L}_g$ acts actively as directional anchors. While Eq.~(\ref{eq:update}) mathematically executes a DE/current-to-best/1 update, it is strictly constrained within the bipartite population hierarchy. The base vector $x$ is explicitly drawn from the support pool, the attractive target $x_L$ is strictly confined to the elite leader set, and the differential component $x_a-x_b$ injects localized diversity. Consequently, the equation acts not as a generic global search operator, but as an asymmetric directed correction that pulls explorative support individuals toward the currently approximated Pareto frontier.
+
+\subsection{Pruned variants and ablation strategy}
+
+During the algorithm design, various mechanisms were tested, and those that did not provide a performance increase were eliminated. The formal analysis of these eliminated features is presented in Section~\ref{sec:results}. One such feature was a boundary-risk multiplier intended to scale the team-guided correction near the feasible-space boundaries. The FITO+BR variant tests the inclusion of this multiplier:
+\begin{equation}
+r(x) = \mathrm{clip}\left(0.35 + 1.3 \cdot \frac{1}{n}\sum_{i=1}^{n}\min(\tilde{x}_i, 1-\tilde{x}_i),\,0.35,\,1.0\right),
+\label{eq:risk}
+\end{equation}
+where
+\begin{equation}
+\tilde{x}_i = \frac{x_i-l_i}{u_i-l_i},
+\end{equation}
+and $l_i$ and $u_i$ are the lower and upper bounds of the $i$-th variable. FITO+BR replaces both correction terms in Eq.~(\ref{eq:update}) by $r(x)$-scaled terms. Because it did not improve overall performance, the final FITO default does not use this scaling.
+
+\subsection{Optional stagnation restart and reactive redeployment}
+
+FITO includes one optional stagnation-triggered restart branch and one active change-triggered redeployment mechanism. To avoid any dependence on external benchmark information, stagnation is detected with an internal quality score based only on the current non-dominated set:
+\begin{equation}
+q_g = \mathrm{HV}\left(\hat{P}^{ND}_g; \mathbf{r}\right),
+\end{equation}
+where $\hat{P}^{ND}_g$ is the current non-dominated set normalized by the current population ideal and nadir vectors, and $\mathbf{r}=(1.1,\ldots,1.1)$ is the reference point. If $q_g$ has not improved for $s=8$ generations (the stagnation tolerance, established via preliminary sensitivity analysis in Section~\ref{subsec:sensitivity}), the weakest
+\begin{equation}
+n_R = \max(4,\lfloor 0.125N \rfloor)
+\end{equation}
+support individuals are replaced either by Gaussian perturbations around randomly sampled leaders or by opposition-style reflections. The perturbation scale is set to $\sigma = 0.08$ of the decision-space width, and the replacement fraction $0.125N$ ensures a local rather than global reset.
+
+Unlike standard stagnation-based restart mechanisms that often reinitialize the entire population or apply uniformly distributed diversity injections, this local random restart (conceptually framed as a ``pit-stop'') is a highly localized, partial reset. It keeps the high-performing leader set strictly intact to preserve the accumulated approximation of the Pareto surface. By targeting only the weakest portion of the support pool and regenerating them in the immediate vicinity of the current leaders, the method avoids catastrophic forgetting while rapidly re-establishing search momentum in regions with the highest probability of yielding improvements.
+
+The second mechanism is change-triggered redeployment. After an environmental change, FITO immediately re-evaluates the retained population and repositions the weakest
+\begin{equation}
+n_C = \max(4,\lfloor 0.08N \rfloor)
+\end{equation}
+support individuals around the current leader set. In both cases, weakness is defined within the support pool by higher non-dominated rank first and, among ties, lower crowding distance. The $0.08N$ redeployment fraction was selected empirically to provide sufficient reaction mass without overriding the entire support pool. This is the active post-change redeployment response in the main dynamic benchmark.
+
+Redeployment is partly informed by recent leader drift. Let $\mathcal{L}^{\mathrm{pre}}_{t-1}$ and $\mathcal{L}^{\mathrm{pre}}_{t}$ denote the leader sets immediately before two consecutive environmental changes, and let $\bar{\ell}_{t-1}$ and $\bar{\ell}_{t}$ be their centroids. When both are available, FITO forms a predictive anchor pool
+\begin{equation}
+\mathcal{A}_{t} = \mathrm{clip}\left(\mathcal{L}^{\mathrm{pre}}_{t} + (\bar{\ell}_{t} - \bar{\ell}_{t-1}),\, \mathbf{l},\, \mathbf{u}\right),
+\end{equation}
+which is a one-step extrapolation of the most recent leader motion. Here, the $\mathrm{clip}(\cdot, \mathbf{l}, \mathbf{u})$ function enforces the lower bounds $\mathbf{l}$ and upper bounds $\mathbf{u}$ of the decision space by projecting any out-of-bound variables back to their respective boundaries. For the first $\lceil 0.5 n_C \rceil$ redeployed support individuals, the final FITO default uses a sampled anchor $a \in \mathcal{A}_{t}$ directly as the redeployment base. Another evaluated feature was anchor-leader blending, which combines an anchor with a current leader $\ell \in \mathcal{L}_{t}$ as:
+\begin{equation}
+b = 0.65\, a + 0.35\, \ell.
+\end{equation}
+Because the ablation study identifies this blend as non-beneficial, it is excluded from the default design and reported only as the FITO+MB variant in Section~\ref{sec:results}. The remaining redeployments use current leaders only. Anchor-based redeployments use Gaussian perturbations with scale $0.35\sigma$, whereas leader-only redeployments use $0.6\sigma$. Figure~\ref{fig:redeployment_concept} conceptually illustrates this change-triggered redeployment mechanism in the decision space.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\textwidth]{../experiments/results/redeployment_concept.pdf}
+\caption{Conceptual 2D illustration of the change-triggered redeployment mechanism. At environment $t-1$, the population is converged. After an environmental change to $t$, the leader set $\mathcal{L}_t$ successfully tracks the new front, but support individuals lag behind. FITO computes a predictive anchor $\mathcal{A}_t$ based on the collective drift and actively redeploys the weakest lagging support individuals around the new anchors and current leaders, accelerating recovery.}
+\label{fig:redeployment_concept}
+\end{figure}
+
+\subsection{Algorithmic flow}
+
+Algorithm~\ref{alg:fito} summarizes the complete procedure. The baseline generational complexity is dominated by non-dominated sorting, giving $O(mN^2)$ for selection plus $O(Nn)$ for variation. However, unlike standard NSGA-II, FITO computes the hypervolume of the normalized non-dominated set $\hat{P}^{ND}_g$ at every generation to monitor stagnation ($q_g$). While exact hypervolume calculation is $O(N \log N)$ for $m=2$ objectives and $O(N \log N + N^{m/2})$ or $O(N^{m-2} \log N)$ for $m \ge 3$, its cost grows exponentially with the number of objectives. For the 2-objective benchmark and portfolio problems studied here, this internal HV calculation is computationally trivial and does not alter the overall $O(N^2)$ generational complexity. For many-objective extensions ($m > 3$), this exact per-generation HV calculation would become a severe computational bottleneck, necessitating either a switch to an approximation method (e.g., Monte Carlo sampling) or a substitution of the stagnation metric with a cheaper alternative like IGD against a reference set or a generational distance-based metric.
+
+\begin{algorithm}[!t]
+\caption{Formula-Inspired Team Optimization (FITO)}
+\label{alg:fito}
+\begin{algorithmic}[1]
+\REQUIRE Population size $N$, generations $G$
+\STATE Initialize population uniformly in the feasible space
+\STATE Evaluate objective vectors
+\FOR{$g=1$ to $G$}
+    \STATE Rank the population by non-dominated sorting and crowding distance
+    \STATE Form leader and support subsets
+    \STATE Generate offspring using leader-support mating, Eq.~(\ref{eq:update}), SBX crossover, and polynomial mutation
+    \STATE Merge parents and offspring and keep the best $N$ solutions
+    \IF{no improvement in $q_g$ is observed for 8 generations}
+        \STATE Pit-stop restart the weakest support individuals
+    \ENDIF
+    \IF{the environment changes}
+        \STATE Re-evaluate the retained population
+        \STATE Redeploy the weakest support individuals around the current leaders
+    \ENDIF
+\ENDFOR
+\STATE \textbf{return} the non-dominated approximation set
+\end{algorithmic}
+\end{algorithm}
+
+\section{Experimental design}
+\label{sec:experiments}
+
+\subsection{Implementation}
+
+All experiments were implemented in Python 3.14 with \texttt{pymoo} 0.6.1.6 \cite{Blank2020Pymoo}. Market-data acquisition for the broader portfolio universe was handled through locally cached \texttt{yfinance} downloads. FITO was implemented from scratch. The repository includes the experiment scripts, cached data files, generated tables, and the manuscript source; \texttt{reproduce\_all.ps1} reruns the full pipeline from the repository root.
+
+\subsection{Dynamic benchmarks and baselines}
+
+The primary synthetic study uses all nine two-objective DF instances, DF1--DF9. Three protocols are evaluated with 60 generations and population size 100: a fast protocol with \texttt{taut}=5 and \texttt{nt}=10, a moderate protocol with \texttt{taut}=10 and \texttt{nt}=10, and a more severe protocol with \texttt{taut}=10 and \texttt{nt}=20. This produces 27 protocol-problem cases and tests both frequent and slower environmental changes.
+
+Six baselines are used in the dynamic comparison:
+\begin{itemize}
+    \item DNSGA-II-A \cite{Deb2007DNSGAII}
+    \item DNSGA-II-B \cite{Deb2007DNSGAII}
+    \item KGB-DMOEA \cite{Ye2022KGB}
+    \item MDDM-DMOEA \cite{Gao2024MDDM}
+    \item NSGA-II \cite{Deb2002NSGAII}
+    \item PPS-DMOEA \cite{Zhou2014Population}
+\end{itemize}
+
+The selection of baselines intentionally prioritizes algorithms with verified, reproducible public implementations. Recent DMOO research includes prediction-based, decision-variable-aware, historical-memory, transfer-learning, and adaptive-response designs such as DSSP, DVC, MDDM, HRS-DMOA, MOEA/D-HSS, DSDRS, RSAS, TMKT, and EHEL \cite{Wu2023DSSP,Wu2023DVC,Gao2024MDDM,Li2024HRS,Hu2024HSS,Ma2024DSDRS,Li2024RSAS,Zhao2025TMKT,Guan2026EHEL}. Reimplementing all of these complex methods from descriptions alone would create substantial implementation bias. Therefore, the benchmark uses reproducible representatives that cover the major response families: DNSGA-II variants for diversity injection, PPS-DMOEA for population prediction, KGB-DMOEA for knowledge-guided Bayesian transfer, MDDM-DMOEA through an open-source KDE-based surrogate of the 2024 multidirectional difference framework, and NSGA-II as a static evolutionary reference.
+
+All dynamic experiments use 20 independent runs with seeds 0--19. The dynamic benchmark is reported in two layers to avoid a misleading fairness interpretation. The primary layer is an approximately fixed-budget protocol that calibrates the population size separately for each algorithm and dynamic protocol to target approximately 8000 objective evaluations while preserving the nominal generation count. The calibration is deliberately lightweight: for each algorithm--protocol pair, the candidate population size is selected from a DF1, seed-0 pilot run and then frozen before the full DF1--DF9, seed-0--19 evaluation is executed. This pilot-based calibration avoids tuning the population size on the full benchmark outcomes, but it also means that the budget target is approximate rather than a multi-problem optimum. Therefore, the realized minimum, mean, and maximum evaluation counts are reported explicitly in Table~\ref{tab:dynamic-fixed-budget}. This layer is used for the main performance claim because dynamic response operators do not consume objective evaluations uniformly across algorithms. The auxiliary layer is a conventional generation-matched diagnostic with a common population size of 100. The auxiliary layer is retained for interpretability and comparison with standard dynamic evolutionary benchmarking practice, but it is not used as the primary evidence of algorithmic superiority. In the auxiliary layer, FITO performs approximately 12,204 objective evaluations on average because redeployment and response operations add evaluations, whereas the baselines range from 6000 evaluations for NSGA-II, MDDM-DMOEA, and PPS-DMOEA to approximately 7390--7492 evaluations for DNSGA-II and KGB-DMOEA variants. This separation prevents the central conclusion from depending on an unequal-evaluation generation-matched comparison. Statistical comparisons use two-sided Mann--Whitney $U$ tests with Holm correction, and Cliff's $\delta$ effect sizes and 95\% confidence intervals for the mean are additionally reported. The one-at-a-time ablation uses FITO-noLS, FITO-noRD, FITO-noPA, FITO-noPS, FITO+BR, and FITO+MB. FITO-noPS disables only the pit-stop restart while keeping redeployment active.
+
+\subsection{Static sanity check}
+
+To assess whether the implementation remains reasonable outside the dynamic setting, FITO is also evaluated on ZDT1, ZDT2, ZDT3, ZDT4, and ZDT6 against NSGA-II, MOEA/D, and RVEA. The static run keeps the same internal stagnation score $q_g$ and restart trigger, but the environment does not move and change-triggered redeployment is absent. Static significance tests also use Mann--Whitney $U$ with global Holm correction. These results are supplementary rather than primary evidence for the dynamic claim.
+
+\subsection{Walk-forward portfolio suite}
+
+The application study is expanded into two 38-period walk-forward universes over 2012-05-18 to 2022-12-29: the original 14-asset technology universe and a broader 20-asset large-cap market universe spanning multiple sectors. This subsection is deliberately designed as a secondary application stress test, not as a real-world validation claim and not as evidence that FITO is a generally superior financial optimizer. At each environment, a trailing 252-trading-day window is used to estimate mean returns and covariance, the algorithm optimizes the estimated long-only mean-variance problem for 10 generations, and deployment is evaluated over the next unseen 63-trading-day holdout window. The primary reporting rule selects the non-dominated portfolio closest to the normalized ideal point with turnover as a tie-break, but max-Sharpe and minimum-variance deployment rules, as well as three transaction-cost settings (5, 10, and 25 bps), are also evaluated. Deterministic equal-weight and rolling minimum-variance strategies are added as deployment references. The portfolio suite reports a generation-matched optimization family and a fixed-budget auxiliary study through per-universe population calibration, here targeting approximately 60000 training-objective evaluations. Pairwise FITO-versus-baseline tests use two-sided Mann--Whitney $U$ tests with Holm correction within each reported metric family. The holdout reference frontier is approximated by a dense long-only efficient-frontier sweep solved by convex scalarization. Four finance-specific restrictions are kept explicit: the universes are fixed ex post and therefore can still contain survivorship or selection bias; the single 2012--2022 period may favor or penalize particular sector structures; transaction costs are represented by simple proportional bps charges without market impact, liquidity, borrowing, tax, or slippage models; and the efficient-frontier approximation is long-only, excluding shorting, leverage, and cash allocation.
+
+\section{Results and discussion}
+\label{sec:results}
+
+
+\subsection{Primary fixed-budget dynamic benchmark}
+\label{subsec:primary-fixed-budget-results}
+
+\input{../experiments/results/asoc_dynamic_budget_ranks.tex}
+
+The primary dynamic benchmark uses the approximately fixed objective-evaluation protocol described in Section~\ref{sec:experiments}. Table~\ref{tab:dynamic-fixed-budget} reports the realized minimum, mean, and maximum evaluation counts together with the protocol-specific population sizes, and Table~\ref{tab:dynamic-budget-ranks} reports the corresponding average MIGD ranks. The realized evaluation counts are tightly aligned around the 8000-evaluation target: FITO averages approximately 8052 evaluations across protocols, DNSGA-II-A and DNSGA-II-B average approximately 8044, KGB-DMOEA averages approximately 8015, and MDDM-DMOEA, NSGA-II, and PPS-DMOEA average 7980. The min--max ranges confirm that the calibration behaves as an evaluation-balancing device rather than as a hidden extra-budget advantage. The design therefore makes the fixed-budget result the main fairness-controlled comparison, while leaving equal-population behavior to the auxiliary diagnostic study.
+
+Under this primary protocol, FITO achieves the best overall average MIGD rank, with 1.898 across the complete DF1--DF9 benchmark and the three dynamic protocols. The next best method is NSGA-II with an overall average rank of 2.711, followed by MDDM-DMOEA (3.415), PPS-DMOEA (4.435), DNSGA-II-A (4.878), DNSGA-II-B (5.280), and KGB-DMOEA (5.383). FITO ranks first in each protocol-level aggregation: 2.139 under \texttt{fast\_t5\_n10}, 1.678 under \texttt{moderate\_t10\_n10}, and 1.878 under \texttt{severe\_t10\_n20}. Holm-corrected pairwise tests over 162 FITO-versus-baseline comparisons yield 131 significant FITO wins, 12 significant FITO losses, and 19 non-significant comparisons. The main empirical claim is therefore restricted to evaluation-balanced dynamic benchmarking: FITO remains the strongest average-rank method when the objective-evaluation budget is approximately equalized.
+
+The fixed-budget results also delimit the method. Significant losses are concentrated in DF2 and selected DF7 cases, with one additional DF1 loss against NSGA-II under the fast protocol. This pattern indicates that the FITO response stack is not universally dominant. The strongest claim supported by the evidence is not universal superiority on every dynamic landscape, but robust average-rank leadership under a controlled objective-evaluation budget. The two concentrated failure families are analyzed explicitly in Section~\ref{subsec:failure-modes}.
+
+\subsection{Auxiliary generation-matched diagnostic}
+\label{subsec:generation-matched-diagnostic}
+
+\input{../experiments/results/asoc_dynamic_protocol_ranks.tex}
+
+The generation-matched 100-population benchmark is retained as an auxiliary diagnostic rather than as the primary fairness-controlled result. Table~\ref{tab:dynamic-eval-budget} shows why this distinction is necessary. FITO performs approximately 12,204 objective evaluations on average in this setting, whereas DNSGA-II-A and DNSGA-II-B average approximately 7390 evaluations, KGB-DMOEA averages approximately 7492, and MDDM-DMOEA, NSGA-II, and PPS-DMOEA average 6000. Consequently, the generation-matched comparison evaluates the behavior of full algorithmic pipelines under a common generation schedule, but it does not equalize objective-evaluation effort.
+
+Within this diagnostic setting, Table~\ref{tab:dynamic-protocol-ranks} shows that FITO again obtains the best overall average MIGD rank (1.554), ahead of NSGA-II (3.028), MDDM-DMOEA (3.756), DNSGA-II-A (4.576), PPS-DMOEA (4.841), DNSGA-II-B (4.978), and KGB-DMOEA (5.269). The method remains first in all three protocol aggregates: 1.739 in the fast \texttt{taut}=5 regime, 1.422 in the moderate \texttt{taut}=10 regime, and 1.500 in the severe \texttt{taut}=10, \texttt{nt}=20 regime. Holm-corrected testing over 162 diagnostic FITO-versus-baseline comparisons records 144 significant FITO wins, 10 significant FITO losses, and 8 non-significant comparisons. These results are useful for interpreting the full response behavior of each method under the same generation horizon. Nevertheless, the diagnostic rank of 1.554 is not used as the headline fairness claim because the objective-evaluation counts are unequal. The fixed-budget rank of 1.898 is the appropriate primary result.
+
+The activation audit confirms that MDDM-DMOEA and PPS-DMOEA no longer collapse to NSGA-II: both baselines register nonzero change-response counts, whereas NSGA-II remains the intended zero-response baseline. The extra predictive response refreshes for MDDM-DMOEA and PPS-DMOEA are recorded separately as \texttt{response\_evaluation\_count} rather than being hidden in the nominal evaluation budget. Detailed protocol-specific MIGD tables are reported in the dynamic appendix.
+
+\subsection{Failure-mode analysis on DF2 and DF7}
+\label{subsec:failure-modes}
+
+The fixed-budget protocol makes the main losses interpretable because they cannot be dismissed as artifacts of unequal objective-evaluation counts. The losses are not random across the benchmark. DF2 produces systematic FITO losses against NSGA-II, DNSGA-II-A, and KGB-DMOEA in all three protocols. Under the fixed-budget setting, FITO obtains mean MIGD values of 0.2969, 0.2175, and 0.1878 on the fast, moderate, and severe DF2 protocols, respectively. The corresponding NSGA-II values are 0.0970, 0.0973, and 0.0659; DNSGA-II-A obtains 0.1472, 0.1290, and 0.1071; and KGB-DMOEA obtains 0.1904, 0.1306, and 0.1132. These differences remain Holm-significant against the three baselines in all three DF2 protocols.
+
+The structural reason is the special DF2 decision topology. In the DF implementation, the first objective is not tied permanently to a fixed coordinate; instead, the active coordinate index is $r=\lfloor (n-1)|\sin(\pi t/2)| \rfloor$, and $f_1=x_r$ while the remaining coordinates enter the distance term $g$. Thus, environmental change can alter which decision variable carries the Pareto-front parameter. This is not a smooth translation of the same decision manifold. It is a coordinate-role switch. FITO's leader-support and redeployment rules intentionally exploit short-term leader motion, but this assumption becomes fragile when the identity of the objective-driving variable changes. A leader displacement observed before the change may point in a formerly useful coordinate direction. After a DF2 coordinate-role switch, the same transferred displacement can pull support individuals toward the wrong manifold. This explains why leader-support plus redeployment can create negative transfer on DF2 rather than useful acceleration.
+
+The pit-stop restart does not fully repair this failure because it is deliberately local. The restart branch regenerates only a small fraction of weak support individuals while preserving leaders and most population geometry. This design is beneficial when the Pareto set moves smoothly or when only part of the support pool stagnates. DF2 requires a broader reallocation of decision-variable roles. Preserving leaders after a coordinate-role switch can preserve obsolete structural information, and regenerating a limited support subset is too weak to rebuild the population around the newly active coordinate. By contrast, NSGA-II has no explicit leader-motion transfer and no preserved anchor dependency. Its crowding-based survival and generic variation maintain a more neutral spread, which is less efficient on many smooth-tracking problems but more robust on DF2. DNSGA-II-A and KGB-DMOEA also benefit because their response mechanisms inject or infer diversity without committing as strongly to the most recent leader displacement.
+
+DF7 is a different and milder failure mode. FITO is not systematically poor on DF7. In the primary fixed-budget suite, the significant losses are concentrated in the fast protocol: FITO gives 0.2742 mean MIGD, whereas NSGA-II gives 0.1526 and MDDM-DMOEA gives 0.1678. Under the moderate protocol, FITO is close to MDDM-DMOEA and NSGA-II, and the Holm-corrected differences are not significant; under the severe protocol, FITO has the best mean value among the compared methods. The issue is therefore not universal DF7 incompatibility, but sensitivity to rapid changes.
+
+DF7 combines a smooth reciprocal objective front with a nonlinear time-dependent decision-space linkage. The Pareto front is parameterized by $f_1=(1+t)/x_0$ and $f_2=x_0/(1+t)$, but the remaining variables are tied to $x_0$ through a logistic target $1/(1+\exp(a(x_0-2.5)))$, where $a=5\cos(\pi t/2)$. As $t$ changes, the objective front may remain smooth while the decision-space manifold associated with that front changes curvature and orientation. This decouples objective-space regularity from decision-space transferability. FITO's anchors can track the apparent front motion, but the support pool may still carry obsolete $x_0$-conditioned linkage information. Fast DF7 changes leave too little time for the local restart and redeployment operators to correct this mismatch. MDDM-DMOEA's distributional response and NSGA-II's broader population spread are therefore competitive in the fast case.
+
+These failures clarify the intended operating regime of FITO. The method is strongest when recent leader motion is a reliable proxy for the next useful search region, as in recurring, sector-like, or topologically stable drift. The method is weaker when environmental change modifies the identity of the active decision variables, reverses nonlinear variable linkages, or fractures the mapping between objective-space front motion and decision-space Pareto-set motion. A practical extension is to add a transfer-quality guard before accepting redeployed individuals: after change detection, a small probe set could compare transferred anchors against random or diversity-injected fallback candidates, and disable leader-motion transfer when the probe shows severe degradation. A second extension is an adaptive restart radius that grows beyond the current pit-stop fraction when coordinate-role switches or linkage reversals are detected.
+
+\subsection{Parameter sensitivity analysis}
+\label{subsec:sensitivity}
+
+To examine the stability of the core hyperparameters, a separate auxiliary sensitivity audit was conducted after the main comparison. The revised audit no longer relies on DF1 alone. It evaluates four dynamic tracking instances, DF1, DF4, DF7, and DF9, under the moderate protocol with 10 independent seeds per setting. The two audited parameters are the directed correction scaling ($\lambda_1$) and the stagnation tolerance ($s$). The main experiments retain the pre-fixed defaults $\lambda_1=0.10$ and $s=8$ to avoid retrospective retuning after observing the benchmark outcomes.
+
+\input{../experiments/results/asoc_dynamic_sensitivity_table.tex}
+
+Table~\ref{tab:dynamic-sensitivity} reports the per-problem and aggregate sensitivity values, while Figure~\ref{fig:sensitivity} visualizes the aggregate trend across the four selected DF instances. The parameter $\lambda_1$ controls the strength of the attractive pull toward the leader set. The multi-problem audit shows that the default $\lambda_1=0.10$ lies in a stable region, although the lowest aggregate mean MIGD in this auxiliary sweep occurs at $\lambda_1=0.15$. The stagnation tolerance $s$ determines how many generations the internal hypervolume score $q_g$ must remain flat before a pit-stop restart is triggered. The default $s=8$ is competitive with $s=6$, but the most aggressive tested restart setting, $s=4$, gives the lowest aggregate mean in the sensitivity subset. These observations are reported as sensitivity evidence rather than used to retroactively retune the main experiments. Other structural parameters, including the redeployment fraction $0.08N$ and the restart fraction $0.125N$, are kept fixed during this audit so that the reported trends isolate the two most influential scalar controls.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\textwidth]{../experiments/results/sensitivity_analysis.pdf}
+\caption{Multi-problem sensitivity analysis of the directed correction scaling $\lambda_1$ (left) and the stagnation tolerance $s$ (right). Points show aggregate mean MIGD over DF1, DF4, DF7, and DF9 under the moderate protocol; error bars show 95\% confidence intervals over the pooled sensitivity runs.}
+\label{fig:sensitivity}
+\end{figure}
+
+\subsection{Ablation analysis}
+
+\input{../experiments/results/asoc_dynamic_ablation_ranks.tex}
+
+Table~\ref{tab:dynamic-ablation-ranks} clarifies which FITO mechanisms survive the broader protocol audit. Leader-support coordination and redeployment remain indispensable: FITO-noLS and FITO-noRD are the two weakest variants by a large margin. Predictive anchors are also helpful overall, although their effect is smaller and more problem-dependent. The critical revision concerns pit-stop restart. Under the expanded protocols, disabling pit-stop restart worsens 15 of the 27 protocol-problem cells, and the restart-enabled default is better on the moderate and severe \texttt{taut}=10 protocols while tying on the fast \texttt{taut}=5 protocol where the branch is inactive. The fixed-budget pit-stop probe shows the same direction, with FITO averaging rank 1.386 versus 1.614 for FITO-noPS. Boundary-risk scaling and anchor-leader blending remain unnecessary: FITO+BR and FITO+MB are still clearly behind the final default.
+
+\subsection{Static sanity check}
+
+Appendix~\ref{app:static} reports the static benchmark results under the same internal stagnation score and restart rule used in the dynamic default. FITO again attains the best mean HV and IGD on all five ZDT instances, with overall average ranks of 1.050 for HV and 1.170 for IGD. The static ablation is consistent with, but does not independently prove, the usefulness of restart: FITO outperforms FITO-noSR on both ZDT4 metrics, while ZDT6 is effectively tied in HV and slightly favors FITO-noSR in IGD. The proper interpretation is therefore conservative. The static evidence shows that the dynamic default does not collapse on standard ZDT landscapes, but the paper's main claim still lives or dies on the dynamic protocols.
+
+\subsection{Walk-forward portfolio suite}
+
+This subsection should be read as a secondary walk-forward case study. It tests whether the dynamic-tracking behavior observed on synthetic DMOO benchmarks transfers to a noisy deployment setting, but it does not establish a general finance claim. The interpretation is intentionally conservative because the winner pattern changes across universe, metric family, decision rule, and transaction-cost setting. Table~\ref{tab:portfolio-scope} summarizes this deliberately limited reading before the detailed metric tables are reported.
+
+\input{../experiments/results/asoc_portfolio_scope_table.tex}
+
+\input{../experiments/results/asoc_portfolio_mhv_table.tex}
+
+\input{../experiments/results/asoc_portfolio_migd_table.tex}
+
+Tables~\ref{tab:portfolio-mhv} and \ref{tab:portfolio-migd} show that the application story is mixed. On the original technology universe, FITO is competitive on frontier-transfer quality but does not separate clearly from DNSGA-II-A; the mean normalized HV values, 0.4148 for FITO and 0.4149 for DNSGA-II-A, are essentially tied, and FITO's IGD is slightly worse. On the broader market universe, DNSGA-II-A and NSGA-II are stronger than FITO on these frontier-transfer metrics, and the Holm-corrected tests record significant FITO losses against them on several metric families.
+
+\input{../experiments/results/asoc_portfolio_deployment_table.tex}
+
+The deployment view is more favorable to FITO on the technology universe than on the broader market universe. In the technology-universe deployment table, FITO gives the highest reported final wealth among the displayed algorithms, ahead of DNSGA-II-A, DNSGA-II-B, NSGA-II, and KGB-DMOEA. However, the broader two-universe sensitivity summary prevents a one-sided reading. On the 20-asset market universe, NSGA-II is stronger than FITO on final wealth, and the MHV-oriented frontier-transfer counts favor MDDM-DMOEA in several settings. Across universe, rule, and transaction-cost variants, the winner pattern is split rather than FITO-dominant. The correct reading is therefore not that FITO is a generally superior investment engine. The narrower reading is that FITO can be useful when the deployed universe has coherent sectoral drift, while diversified universes and frontier-transfer metrics can favor different optimizers.
+
+This performance divergence highlights a critical boundary condition of the predictive redeployment mechanism, driven by \textit{topological fracture}. The 14-asset technology universe is highly correlated; when macroeconomic shocks occur, the true Pareto front shifts significantly in objective space, but its underlying geometric topology remains relatively stable. In such sector-specific environments, FITO's predictive anchors and change-triggered redeployment mechanism accurately capture the collective drift, successfully pulling the support pool toward the new front. Conversely, the 20-asset market universe contains weakly correlated and anti-correlated assets across diverse sectors. Environmental changes in this diverse universe cause the true Pareto front to jump erratically and alter its topological shape drastically. When the front topology fractures, recent leader motion becomes misleading. FITO's redeployment mechanism, which relies on this recent drift, suffers from negative transfer, steering the support pool into sub-optimal regions. Currently, FITO lacks a ``guard'' mechanism---such as a preliminary evaluation step to revert to a random fallback if the transferred individuals experience severe fitness degradation---to detect and reject this negative transfer. Furthermore, the increase in dimensionality (from $n=14$ to $n=20$) exponentially expands the decision space, diluting the localized effectiveness of the pit-stop restart. In these highly volatile, topologically unstable environments, NSGA-II's globally dispersed population acts as a more robust fallback compared to FITO's tightly coordinated anchor dependencies.
+
+\subsection{Implications}
+
+The fixed-budget reframing changes the interpretation of the dynamic benchmark. The generation-matched suite shows that FITO is highly effective when the full response machinery is allowed to operate under a common generation horizon, but that suite also gives FITO more objective evaluations than several baselines. The approximately fixed-budget suite removes this confound and still ranks FITO first overall. The fair conclusion is therefore stronger and narrower: FITO's advantage is not solely an artifact of extra objective evaluations, because the method remains first under an approximately equalized evaluation budget; however, the advantage is not uniform across all landscapes. DF2 shows that recent leader-motion transfer can be harmful when environmental change reassigns the active decision coordinate. DF7 shows that smooth objective-front motion can still hide a changing nonlinear decision-space linkage. The walk-forward suite, by contrast, is only a secondary stress test. It does not support a universal finance claim: FITO is competitive and sometimes best, especially on the technology universe, but NSGA-II is stronger on the broader market universe for final wealth, MDDM-DMOEA leads several MHV frontier-transfer counts, and the sensitivity winners are split. These mixed outcomes are useful because they expose boundary conditions rather than because they validate FITO as a general portfolio optimizer.
+
+\section{Threats to validity}
+\label{sec:validity}
+
+Eight limitations remain. First, the dynamic study now covers DF1--DF9 and three protocols, but it is still limited to the DF family available in the current \texttt{pymoo} environment rather than a broader reproduced benchmark universe. Second, the primary fixed-budget study changes population size to normalize evaluations; this is a reasonable budget-control device for fairness-controlled evaluation, but it is not the same experimental question as equal-population benchmarking. Third, the fixed-budget population-size calibration uses a DF1, seed-0 pilot for each algorithm--protocol pair. This choice keeps the calibration lightweight and avoids tuning on all final outcomes, but a stronger future protocol would calibrate on several representative pilot problems, for example DF1, DF4, and DF7, and then freeze the resulting average population sizes before the full evaluation. The realized min--mean--max budget table is included to make the approximation auditable. Fourth, the component study is one-at-a-time rather than factorial, so interactions among pit-stop restart, redeployment, and predictive anchors are not yet fully resolved. Fifth, the baseline selection is restricted to algorithms with reproducible, open-source implementations. While the related-work section now covers recent 2023--2026 prediction, transfer-learning, adaptive-response, restart, and benchmark-design studies, reimplementing highly complex methods from scratch can introduce severe implementation bias. This risk is mitigated by including reproducible representatives of the major response families and by integrating an open-source KDE-based surrogate of the 2024 MDDM framework. Nevertheless, future comparisons against natively open-sourced implementations of newer methods such as HRS-DMOA, MOEA/D-HSS, DSDRS, RSAS, TMKT, EHEL, and generalized 2026 benchmark suites would further strengthen the empirical scope. Sixth, the DF2/DF7 failure-mode explanation combines observed performance patterns with benchmark formula inspection; it is a mechanistic interpretation rather than a separate causal ablation that directly switches coordinate-role and linkage dynamics on and off. Seventh, the walk-forward portfolio section is a secondary application stress test rather than a real-world validation study. It uses only two equity universes, one 252/63 walk-forward schedule, three decision rules, and three cost levels; the mixed results are insufficient for any general finance or investment-performance claim. Eighth, the portfolio protocol still contains finance-specific simplifications: the fixed asset universes may embed survivorship or selection bias; the 2012--2022 sample period may favor particular market regimes; the proportional transaction-cost model omits liquidity, market impact, bid--ask spread dynamics, taxes, borrowing, and slippage; and the long-only frontier excludes short-selling, leverage, and explicit cash allocation. These restrictions make the portfolio suite useful as a stress test of dynamic tracking behavior, but not as an investment validation study.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presents a reproducible dynamic multi-objective evolutionary optimizer mathematically grounded as a bipartite Differential Evolution with asymmetric elitism and local random restart, conceptually inspired by Formula 1 team coordination principles. Under the expanded DF1--DF9 benchmark suite with three change protocols, FITO achieves the best primary fixed-budget overall average MIGD rank (1.898) when objective-evaluation counts are approximately equalized around 8000 evaluations per run. The generation-matched result remains consistent, with an overall diagnostic rank of 1.554, but it is not used as the primary fairness-controlled evidence because FITO performs more objective evaluations than several baselines under the common-generation protocol. The component analysis gives a clearer mechanism story: leader-support coordination, redeployment, predictive anchors, and pit-stop restart are useful under the broader protocols, whereas boundary-risk scaling and anchor-leader blending should be excluded from the default. The default FITO obtains an ablation average rank of 2.517, compared with 3.278 without pit-stop restart, and the separate fixed-budget pit-stop probe gives 1.386 versus 1.614. The static ZDT study remains a secondary sanity check, not the primary claim. The walk-forward portfolio suite deliberately narrows the application narrative: it is a secondary stress test, not a real-world validation study. FITO is strongest on the 14-asset technology universe, but NSGA-II is stronger on the broader 20-asset universe for final wealth and MDDM-DMOEA is stronger in several MHV frontier-transfer counts. Consequently, FITO should be interpreted as a competitive budget-aware dynamic tracking framework rather than a universally dominant optimizer or a generally superior portfolio method. The DF2 and DF7 failure-mode analysis narrows this interpretation further: leader-motion transfer is useful when the decision-space manifold moves coherently, but it can become negative transfer when active coordinate roles switch or nonlinear linkages reverse quickly. While highly volatile, high-dimensional topologies remain challenging, the rapid recovery mechanisms are useful for domains characterized by recurring or topologically stable environmental drift. Because exact hypervolume computation becomes an $O(N^{m-2} \log N)$ bottleneck for $m > 3$ objectives, future many-objective extensions should substitute the stagnation trigger with cheaper alternatives such as the R2 indicator or generational-distance metrics. Future work will also integrate localized topology estimation, transfer-quality probes, and adaptive restart radii to detect and alleviate negative transfer in diverse, large-scale systems.
+
+\section*{Data availability}
+
+The implementation scripts, cached market data, generated raw/result artifacts, manuscript source, and compiled manuscript snapshot are available in the public repository \url{https://github.com/ErcanErkalkan/Formula_Inspired_Team_Based_Optimization_for_Decision_Making_and_Strategy_in_Dynamic_Systems}. The repository includes a reviewer-oriented \texttt{README.md}, pinned Python dependencies in \texttt{requirements.txt}, a Conda wrapper in \texttt{environment.yml}, Windows and Linux/macOS reproduction entry points through \texttt{reproduce\_all.ps1} and \texttt{reproduce\_all.sh}, a \texttt{Makefile} with separate \texttt{smoke}, \texttt{tables}, and \texttt{full} targets, and a \texttt{SHA256SUMS.txt} manifest generated by \texttt{scripts/generate\_checksums.py}. The command \texttt{python experiments/smoke\_test.py} performs a quick reproducibility smoke test, \texttt{bash reproduce\_all.sh --tables-only} or \texttt{.\\reproduce\_all.ps1 -TablesOnly} rebuilds tables and the manuscript from existing raw artifacts, and \texttt{bash reproduce\_all.sh} or \texttt{.\\reproduce\_all.ps1} reruns the full experimental pipeline. The primary fixed-budget dynamic benchmark outputs are stored under \texttt{experiments/results/asoc\_dynamic\_budget\_*}; auxiliary generation-matched diagnostic outputs are stored under \texttt{experiments/results/asoc\_dynamic\_eval\_budget*} and \texttt{experiments/results/asoc\_dynamic\_protocol\_ranks.tex}; and the secondary walk-forward portfolio stress-test outputs are stored under \texttt{experiments/results/asoc\_portfolio\_*}.
+
+\section*{Funding}
+
+This research received no specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
+
+During the preparation of this work, the author used AI-assisted tools for language editing, code inspection, and consistency checks. All technical decisions, experimental redesign, verification, and final manuscript content were reviewed and approved by the author, who takes full responsibility for the submitted work.
+
+\section*{Declaration of competing interest}
+
+The author declares no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{asoc_refs}
+
+\appendix
+
+\section{Dynamic protocol tables}
+\label{app:dynamic}
+
+\input{../experiments/results/asoc_dynamic_fast_t5_n10_table.tex}
+
+\input{../experiments/results/asoc_dynamic_moderate_t10_n10_table.tex}
+
+\input{../experiments/results/asoc_dynamic_severe_t10_n20_table.tex}
+
+\input{../experiments/results/asoc_dynamic_eval_budget_table.tex}
+
+\input{../experiments/results/asoc_dynamic_fixed_budget_table.tex}
+
+\section{Static benchmark and ablation tables}
+\label{app:static}
+
+\input{../experiments/results/hv_table.tex}
+
+\input{../experiments/results/igd_table.tex}
+
+\input{../experiments/results/ablation_table.tex}
+
+\end{document}
