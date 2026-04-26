@@ -1,7 +1,0 @@
-Highlights
-
-- FITO combines leader-support search, predictive anchors, redeployment, and pit-stop restart for dynamic multi-objective optimization.
-- The primary dynamic benchmark uses an approximately fixed objective-evaluation budget instead of relying on generation-matched comparisons.
-- Across DF1--DF9 and three dynamic protocols, FITO achieves the best fixed-budget overall average MIGD rank (1.898).
-- Generation-matched results are reported only as auxiliary diagnostics because objective-evaluation counts differ across algorithms.
-- DF2 and selected DF7 failure modes are explicitly analyzed as negative-transfer cases involving coordinate-role switches and nonlinear linkage changes.
