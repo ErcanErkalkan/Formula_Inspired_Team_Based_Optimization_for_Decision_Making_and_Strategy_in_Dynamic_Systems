@@ -139,7 +139,7 @@ def main() -> None:
         eval_table_latex(
             eval_budget,
             family_name="main",
-            caption="Dynamic generation-matched evaluation and runtime summary.",
+            caption="Auxiliary generation-matched dynamic evaluation audit. Nominal optimizer evaluations, separate response-refresh evaluations, total objective calls, and population-size summaries are reported as means over final runs.",
             label="tab:dynamic-eval-budget",
         ),
         encoding="utf-8",
@@ -148,7 +148,7 @@ def main() -> None:
         eval_table_latex(
             eval_budget,
             family_name="budget",
-            caption="Dynamic fixed-budget calibration summary.",
+            caption="Primary fixed-budget dynamic audit. The calibration equalizes the nominal optimizer budget; response-refresh evaluations for predictive baselines are reported separately, and total objective calls are shown explicitly.",
             label="tab:dynamic-fixed-budget",
         ),
         encoding="utf-8",

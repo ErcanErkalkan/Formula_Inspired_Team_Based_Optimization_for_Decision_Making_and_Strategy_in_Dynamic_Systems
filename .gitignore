@@ -23,6 +23,7 @@ var/
 venv/
 ENV/
 .pytest_cache/
+manuscript/
 
 # LaTeX build intermediates; manuscript sources and PDFs remain tracked
 *.aux

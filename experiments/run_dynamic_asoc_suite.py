@@ -159,7 +159,7 @@ def run_dynamic_fito(
     problem_name: str,
     seed: int,
     pop_size: int,
-    use_pitstop_restart: bool = False,
+    use_pitstop_restart: bool = True,
     use_leader_support: bool = True,
     use_boundary_risk: bool = False,
     use_redeployment: bool = True,
@@ -638,31 +638,46 @@ def rank_table_latex(rank_df: pd.DataFrame, algorithms: tuple[str, ...], caption
     return "\n".join(lines) + "\n"
 
 def eval_table_latex(eval_df: pd.DataFrame, family_name: str, caption: str, label: str) -> str:
-    family_rows = eval_df[eval_df[("family", "")] == family_name]
+    """Render an audit table that separates nominal and response-refresh evaluations.
+
+    The fixed-budget claim in the manuscript refers to the nominal optimizer
+    budget. Predictive baselines may additionally refresh objective values after
+    direct population edits; those response-refresh calls are therefore reported
+    separately and combined into an explicit total-call column.
+    """
+    family_rows = eval_df[eval_df[("family", "")] == family_name].copy()
+    row_end = r" \\"
     lines = [
         "\\begin{table}[!t]",
         "\\centering",
         f"\\caption{{{caption}}}",
         f"\\label{{{label}}}",
         "\\resizebox{\\textwidth}{!}{%",
-        "\\begin{tabular}{llccc}",
+        "\\begin{tabular}{llccccc}",
         "\\toprule",
-        "Protocol & Algorithm & Mean evals & Mean pop & Mean runtime (s) \\\\",
+        "Protocol & Algorithm & Nom. eval. & Resp. eval. & Total calls & Pop. mean & Pop. range" + row_end,
         "\\midrule",
     ]
-    for protocol_name in PROTOCOLS:
+    for pi, protocol_name in enumerate(PROTOCOLS):
         rows = family_rows[family_rows[("protocol", "")] == protocol_name]
         for algorithm in MAIN_ALGORITHMS:
             row = rows[rows[("algorithm", "")] == algorithm].iloc[0]
+            nominal = float(row[("n_evals", "mean")])
+            response = float(row[("response_evaluation_count", "mean")])
+            total = nominal + response
+            pop_mean = float(row[("pop_size", "mean")])
+            pop_min = int(row[("pop_size", "min")])
+            pop_max = int(row[("pop_size", "max")])
+            protocol_label = protocol_name.replace("_", "\\_")
             lines.append(
-                f"{protocol_name.replace('_', '\\_')} & {algorithm} & "
-                f"{row[('n_evals', 'mean')]:.1f} & {row[('pop_size', 'mean')]:.1f} & {row[('runtime_sec', 'mean')]:.3f} \\\\"
+                f"{protocol_label} & {algorithm} & "
+                f"{nominal:.1f} & {response:.1f} & {total:.1f} & "
+                f"{pop_mean:.1f} & {pop_min}--{pop_max}" + row_end
             )
-        lines.append("\\midrule")
-    lines[-1] = "\\bottomrule"
-    lines.extend(["\\end{tabular}", "}", "\\end{table}"])
+        if pi != len(PROTOCOLS) - 1:
+            lines.append("\\midrule")
+    lines.extend(["\\bottomrule", "\\end{tabular}", "}", "\\end{table}"])
     return "\n".join(lines) + "\n"
-
 
 def write_summary(
     main_rank_df: pd.DataFrame,
@@ -693,7 +708,7 @@ def write_summary(
     for algorithm, value in main_rank_df.groupby("algorithm")["average_rank"].mean().sort_values().items():
         lines.append(f"  - {algorithm}: {value:.3f}")
 
-    lines.extend(["", f"Fixed-budget target: {FIXED_BUDGET_TARGET} objective evaluations (approximate, protocol-specific pop calibration)."])
+    lines.extend(["", f"Fixed-budget target: {FIXED_BUDGET_TARGET} nominal objective evaluations (approximate, protocol-specific population calibration; response-refresh evaluations are audited separately)."])
     for protocol_name, pop_map in fixed_budget_pop_sizes.items():
         lines.append(f"  - {protocol_name}: {pop_map}")
 
@@ -871,7 +886,7 @@ def main() -> None:
     main_eval_table = eval_table_latex(
         eval_budget,
         family_name="main",
-        caption="Dynamic generation-matched evaluation and runtime summary.",
+        caption="Auxiliary generation-matched dynamic evaluation audit. Nominal optimizer evaluations, separate response-refresh evaluations, total objective calls, and population-size summaries are reported as means over final runs.",
         label="tab:dynamic-eval-budget",
     )
     (RESULTS_DIR / "asoc_dynamic_eval_budget_table.tex").write_text(main_eval_table, encoding="utf-8")
@@ -879,7 +894,7 @@ def main() -> None:
     budget_eval_table = eval_table_latex(
         eval_budget,
         family_name="budget",
-        caption="Dynamic fixed-budget calibration summary.",
+        caption="Primary fixed-budget dynamic audit. The calibration equalizes the nominal optimizer budget; response-refresh evaluations for predictive baselines are reported separately, and total objective calls are shown explicitly.",
         label="tab:dynamic-fixed-budget",
     )
     (RESULTS_DIR / "asoc_dynamic_fixed_budget_table.tex").write_text(budget_eval_table, encoding="utf-8")

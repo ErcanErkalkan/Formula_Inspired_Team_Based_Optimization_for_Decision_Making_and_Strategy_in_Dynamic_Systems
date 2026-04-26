@@ -1,16 +1,16 @@
-\begin{table*}[!t]
+\begin{table}[!t]
 \centering
 \small
-\caption{Conservative interpretation of the secondary walk-forward portfolio stress test.}
+\caption{Conservative two-universe interpretation of the secondary walk-forward portfolio stress test.}
 \label{tab:portfolio-scope}
-\begin{tabular}{p{0.24\textwidth}p{0.32\textwidth}p{0.36\textwidth}}
+\begin{tabular}{L{0.28\linewidth}L{0.28\linewidth}L{0.34\linewidth}}
 \toprule
 Evidence block & Observed winner pattern & Manuscript interpretation \\
 \midrule
-Technology universe (tech14), final wealth & FITO is strongest under the primary closest-to-utopia deployment rule. & Supports a limited claim that leader-motion redeployment can help when sectoral drift is coherent. \\
-Broader market universe (market20), final wealth & NSGA-II is stronger than FITO. & Rejects any universal finance or investment-performance claim. \\
-Frontier-transfer quality (MHV sensitivity counts) & MDDM-DMOEA is strongest in several settings. & Shows that deployment wealth and frontier-transfer quality do not identify the same winner. \\
-Rule/cost sensitivity & Wealth winners are split across algorithms. & Positions the portfolio study as a stress test of boundary conditions, not as real-world validation. \\
+tech14: 14-asset technology universe, main-family final wealth & FITO is strongest under the primary closest-to-utopia deployment rule. & Supports a limited claim that leader-motion redeployment can help when sectoral drift is coherent. \\
+market20: 20-asset diversified market universe, main-family final wealth & NSGA-II is stronger than FITO. & Rejects any universal finance or investment-performance claim. \\
+Frontier-transfer quality, main-family MHV summaries & MDDM-DMOEA has the highest mean MHV in both tech14 and market20. & Shows that deployment wealth and frontier-transfer quality do not identify the same winner. \\
+Displayed main-family metric views & Winners differ across frontier and deployment metrics; fixed-budget-family deployment is audited separately in the raw CSV. & Positions the portfolio study as a stress test of boundary conditions, not as real-world validation. \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}

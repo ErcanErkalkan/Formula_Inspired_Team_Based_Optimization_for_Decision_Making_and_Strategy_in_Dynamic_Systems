@@ -1,19 +1,29 @@
-\begin{table*}[!t]
+\begin{table}[!t]
 \centering
 \small
-\caption{Secondary walk-forward deployment metrics over 20 independent runs.}
+\caption{Main-family walk-forward deployment metrics for both portfolio universes under the closest-to-utopia selection rule at 10 bps. Values are generated from the flattened \texttt{asoc\_portfolio\_deployment\_summary.csv}; both universes and all seven ASOC algorithms are shown.}
 \label{tab:portfolio-deployment}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccc}
+\begin{tabular}{llcccc}
 \toprule
-Algorithm & Final wealth & Ann. return & Ann. vol. & Mean turnover & Max drawdown \\
+Universe & Algorithm & Final wealth & Ann. return & Ann. vol. & Mean turnover \\
 \midrule
-FITO & \textbf{39.667 $\pm$ 6.515} & 0.471 $\pm$ 0.026 & 0.285 $\pm$ 0.009 & 0.358 $\pm$ 0.033 & 0.230 $\pm$ 0.030 \\
-DNSGA-II-A & 34.609 $\pm$ 6.621 & 0.450 $\pm$ 0.028 & 0.262 $\pm$ 0.008 & 0.343 $\pm$ 0.017 & 0.190 $\pm$ 0.042 \\
-DNSGA-II-B & 27.102 $\pm$ 6.985 & 0.411 $\pm$ 0.038 & 0.262 $\pm$ 0.014 & 0.315 $\pm$ 0.030 & 0.209 $\pm$ 0.042 \\
-NSGA-II & 24.832 $\pm$ 3.332 & 0.401 $\pm$ 0.020 & 0.268 $\pm$ 0.011 & 0.033 $\pm$ 0.006 & 0.236 $\pm$ 0.018 \\
-KGB-DMOEA & 21.728 $\pm$ 3.395 & 0.381 $\pm$ 0.023 & 0.234 $\pm$ 0.004 & 0.330 $\pm$ 0.014 & 0.117 $\pm$ 0.022 \\
+tech14 (14 assets) & FITO & \textbf{41.618 $\pm$ 12.617} & 0.473 & 0.279 & 0.345 \\
+tech14 (14 assets) & DNSGA-II-A & 34.609 $\pm$ 6.621 & 0.450 & 0.262 & 0.343 \\
+tech14 (14 assets) & DNSGA-II-B & 31.140 $\pm$ 7.573 & 0.432 & 0.269 & 0.322 \\
+tech14 (14 assets) & KGB-DMOEA & 21.728 $\pm$ 3.395 & 0.381 & 0.234 & 0.330 \\
+tech14 (14 assets) & MDDM-DMOEA & 34.715 $\pm$ 10.177 & 0.446 & 0.282 & 0.370 \\
+tech14 (14 assets) & NSGA-II & 24.832 $\pm$ 3.332 & 0.401 & 0.268 & 0.033 \\
+tech14 (14 assets) & PPS-DMOEA & 27.783 $\pm$ 7.187 & 0.415 & 0.267 & 0.334 \\
+\midrule
+market20 (20 assets) & FITO & 5.744 $\pm$ 0.488 & 0.202 & 0.164 & 0.254 \\
+market20 (20 assets) & DNSGA-II-A & 6.058 $\pm$ 0.447 & 0.208 & 0.163 & 0.290 \\
+market20 (20 assets) & DNSGA-II-B & 5.520 $\pm$ 0.366 & 0.197 & 0.162 & 0.234 \\
+market20 (20 assets) & KGB-DMOEA & 5.810 $\pm$ 0.405 & 0.203 & 0.158 & 0.309 \\
+market20 (20 assets) & MDDM-DMOEA & 5.887 $\pm$ 0.454 & 0.205 & 0.166 & 0.280 \\
+market20 (20 assets) & NSGA-II & \textbf{6.404 $\pm$ 0.489} & 0.216 & 0.162 & 0.054 \\
+market20 (20 assets) & PPS-DMOEA & 5.570 $\pm$ 0.403 & 0.198 & 0.161 & 0.228 \\
 \bottomrule
 \end{tabular}
 }
-\end{table*}
+\end{table}

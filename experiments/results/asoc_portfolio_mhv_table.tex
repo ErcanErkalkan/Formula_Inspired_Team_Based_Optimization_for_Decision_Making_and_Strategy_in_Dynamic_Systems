@@ -1,16 +1,16 @@
 \begin{table}[!t]
 \centering
-\caption{Secondary walk-forward portfolio stress test measured by mean out-of-sample normalized HV over 20 independent runs.}
+\small
+\caption{Main-family out-of-sample normalized hypervolume (MHV) for the secondary walk-forward portfolio stress test. The table is generated from \texttt{asoc\_portfolio\_mhv\_summary.csv}; higher values are better, and both the 14-asset technology universe and 20-asset market universe are reported.}
 \label{tab:portfolio-mhv}
-\begin{tabular}{lc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccc}
 \toprule
-Algorithm & Value \\
+Universe & FITO & DNSGA-II-A & DNSGA-II-B & KGB-DMOEA & MDDM-DMOEA & NSGA-II & PPS-DMOEA \\
 \midrule
-FITO & \textbf{0.4436 $\pm$ 0.0393} \\
-DNSGA-II-A & 0.4149 $\pm$ 0.0169 \\
-DNSGA-II-B & 0.3841 $\pm$ 0.0319 \\
-NSGA-II & 0.3760 $\pm$ 0.0236 \\
-KGB-DMOEA & 0.3482 $\pm$ 0.0112 \\
+tech14 (14 assets) & 0.4148 $\pm$ 0.0388 & 0.4149 $\pm$ 0.0169 & 0.3947 $\pm$ 0.0304 & 0.3482 $\pm$ 0.0112 & \textbf{0.4247 $\pm$ 0.0320} & 0.3760 $\pm$ 0.0236 & 0.3916 $\pm$ 0.0317 \\
+market20 (20 assets) & 0.2393 $\pm$ 0.0177 & 0.2790 $\pm$ 0.0129 & 0.2506 $\pm$ 0.0148 & 0.2560 $\pm$ 0.0148 & \textbf{0.2858 $\pm$ 0.0154} & 0.2552 $\pm$ 0.0109 & 0.2479 $\pm$ 0.0152 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}

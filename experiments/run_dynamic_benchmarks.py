@@ -88,7 +88,7 @@ ABLATION_VARIANTS = {
     "FITO-noPS": {
         **FITO_DEFAULT_CONFIG,
         "use_pitstop_restart": False,
-        "description": "Disable only the optional stagnation-triggered pit-stop branch; keep post-change redeployment enabled.",
+        "description": "Disable only the default-enabled stagnation-triggered pit-stop branch; keep post-change redeployment enabled.",
     },
     "FITO-noRD": {
         **FITO_DEFAULT_CONFIG,

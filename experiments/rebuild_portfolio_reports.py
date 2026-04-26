@@ -11,7 +11,7 @@ from run_portfolio_asoc_suite import (
     RESULTS_DIR, UNIVERSES, DECISION_RULES, PRIMARY_RULE, PRIMARY_COST,
     MAIN_ALGORITHMS, SEEDS,
     summarize_primary, summarize_sensitivity, evaluate_simple_benchmarks,
-    pairwise_stats, primary_table_latex, deployment_table_latex, write_summary,
+    pairwise_stats, primary_table_latex, deployment_table_latex, benchmark_table_latex, write_summary,
     activation_event_frame, summarize_activation_audit,
     validate_portfolio_algorithm_coverage,
 )
@@ -79,7 +79,7 @@ def main():
             mhv_summary,
             metric="mhv",
             higher_is_better=True,
-            caption="Mean out-of-sample normalized HV on the primary walk-forward portfolio protocol.",
+            caption="Main-family out-of-sample normalized hypervolume (MHV) for the secondary walk-forward portfolio stress test. The table is generated from \\texttt{asoc\\_portfolio\\_mhv\\_summary.csv}; higher values are better, and both the 14-asset technology universe and 20-asset market universe are reported.",
             label="tab:portfolio-mhv",
         ),
         encoding="utf-8",
@@ -89,7 +89,7 @@ def main():
             migd_summary,
             metric="migd",
             higher_is_better=False,
-            caption="Mean out-of-sample IGD on the primary walk-forward portfolio protocol.",
+            caption="Main-family out-of-sample mean inverted generational distance (MIGD) for the secondary walk-forward portfolio stress test. The table is generated from \\texttt{asoc\\_portfolio\\_migd\\_summary.csv}; lower values are better, and both the 14-asset technology universe and 20-asset market universe are reported.",
             label="tab:portfolio-migd",
         ),
         encoding="utf-8",
@@ -97,8 +97,16 @@ def main():
     (RESULTS_DIR / "asoc_portfolio_deployment_table.tex").write_text(
         deployment_table_latex(
             deployment_summary,
-            caption="Primary walk-forward deployment metrics under closest-to-utopia selection at 10 bps.",
+            caption="Main-family walk-forward deployment metrics for both portfolio universes under the closest-to-utopia selection rule at 10 bps. Values are generated from the flattened \\texttt{asoc\\_portfolio\\_deployment\\_summary.csv}; both universes and all seven ASOC algorithms are shown.",
             label="tab:portfolio-deployment",
+        ),
+        encoding="utf-8",
+    )
+    (RESULTS_DIR / "asoc_portfolio_benchmark_table.tex").write_text(
+        benchmark_table_latex(
+            benchmark_df,
+            caption="Deterministic deployment references for the secondary walk-forward portfolio stress test under the primary 10 bps cost setting. These references provide scale only and are not included in FITO-versus-DMOEA statistical tests.",
+            label="tab:portfolio-benchmarks",
         ),
         encoding="utf-8",
     )

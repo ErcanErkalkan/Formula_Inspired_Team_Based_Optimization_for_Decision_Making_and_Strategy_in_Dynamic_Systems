@@ -1,35 +1,35 @@
 \begin{table}[!t]
 \centering
-\caption{Auxiliary generation-matched evaluation and runtime diagnostic. Different internal response mechanisms lead to unequal objective-evaluation counts; this table is therefore not used as the primary fairness claim.}
+\caption{Auxiliary generation-matched dynamic evaluation audit. Nominal optimizer evaluations, separate response-refresh evaluations, total objective calls, and population-size summaries are reported as means over final runs.}
 \label{tab:dynamic-eval-budget}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llccc}
+\begin{tabular}{llccccc}
 \toprule
-Protocol & Algorithm & Mean evals & Mean pop & Mean runtime (s) \\
+Protocol & Algorithm & Nom. eval. & Resp. eval. & Total calls & Pop. mean & Pop. range \\
 \midrule
-fast\_t5\_n10 & FITO & 12196.0 & 100.0 & 0.984 \\
-fast\_t5\_n10 & DNSGA-II-A & 7790.0 & 100.0 & 1.082 \\
-fast\_t5\_n10 & DNSGA-II-B & 7790.0 & 100.0 & 1.075 \\
-fast\_t5\_n10 & KGB-DMOEA & 7943.0 & 100.0 & 3.470 \\
-fast\_t5\_n10 & MDDM-DMOEA & 6000.0 & 100.0 & 1.032 \\
-fast\_t5\_n10 & NSGA-II & 6000.0 & 100.0 & 0.937 \\
-fast\_t5\_n10 & PPS-DMOEA & 6000.0 & 100.0 & 1.035 \\
+fast\_t5\_n10 & FITO & 12196.0 & 0.0 & 12196.0 & 100.0 & 100--100 \\
+fast\_t5\_n10 & DNSGA-II-A & 7790.0 & 0.0 & 7790.0 & 100.0 & 100--100 \\
+fast\_t5\_n10 & DNSGA-II-B & 7790.0 & 0.0 & 7790.0 & 100.0 & 100--100 \\
+fast\_t5\_n10 & KGB-DMOEA & 7943.0 & 0.0 & 7943.0 & 100.0 & 100--100 \\
+fast\_t5\_n10 & MDDM-DMOEA & 6000.0 & 1200.0 & 7200.0 & 100.0 & 100--100 \\
+fast\_t5\_n10 & NSGA-II & 6000.0 & 0.0 & 6000.0 & 100.0 & 100--100 \\
+fast\_t5\_n10 & PPS-DMOEA & 6000.0 & 1200.0 & 7200.0 & 100.0 & 100--100 \\
 \midrule
-moderate\_t10\_n10 & FITO & 12207.9 & 100.0 & 0.964 \\
-moderate\_t10\_n10 & DNSGA-II-A & 7190.0 & 100.0 & 1.080 \\
-moderate\_t10\_n10 & DNSGA-II-B & 7190.0 & 100.0 & 1.081 \\
-moderate\_t10\_n10 & KGB-DMOEA & 7266.5 & 100.0 & 6.180 \\
-moderate\_t10\_n10 & MDDM-DMOEA & 6000.0 & 100.0 & 1.020 \\
-moderate\_t10\_n10 & NSGA-II & 6000.0 & 100.0 & 0.978 \\
-moderate\_t10\_n10 & PPS-DMOEA & 6000.0 & 100.0 & 1.021 \\
+moderate\_t10\_n10 & FITO & 12207.9 & 0.0 & 12207.9 & 100.0 & 100--100 \\
+moderate\_t10\_n10 & DNSGA-II-A & 7190.0 & 0.0 & 7190.0 & 100.0 & 100--100 \\
+moderate\_t10\_n10 & DNSGA-II-B & 7190.0 & 0.0 & 7190.0 & 100.0 & 100--100 \\
+moderate\_t10\_n10 & KGB-DMOEA & 7266.5 & 0.0 & 7266.5 & 100.0 & 100--100 \\
+moderate\_t10\_n10 & MDDM-DMOEA & 6000.0 & 600.0 & 6600.0 & 100.0 & 100--100 \\
+moderate\_t10\_n10 & NSGA-II & 6000.0 & 0.0 & 6000.0 & 100.0 & 100--100 \\
+moderate\_t10\_n10 & PPS-DMOEA & 6000.0 & 600.0 & 6600.0 & 100.0 & 100--100 \\
 \midrule
-severe\_t10\_n20 & FITO & 12208.1 & 100.0 & 0.953 \\
-severe\_t10\_n20 & DNSGA-II-A & 7190.0 & 100.0 & 1.062 \\
-severe\_t10\_n20 & DNSGA-II-B & 7190.0 & 100.0 & 1.052 \\
-severe\_t10\_n20 & KGB-DMOEA & 7266.4 & 100.0 & 8.037 \\
-severe\_t10\_n20 & MDDM-DMOEA & 6000.0 & 100.0 & 1.007 \\
-severe\_t10\_n20 & NSGA-II & 6000.0 & 100.0 & 0.945 \\
-severe\_t10\_n20 & PPS-DMOEA & 6000.0 & 100.0 & 0.993 \\
+severe\_t10\_n20 & FITO & 12208.1 & 0.0 & 12208.1 & 100.0 & 100--100 \\
+severe\_t10\_n20 & DNSGA-II-A & 7190.0 & 0.0 & 7190.0 & 100.0 & 100--100 \\
+severe\_t10\_n20 & DNSGA-II-B & 7190.0 & 0.0 & 7190.0 & 100.0 & 100--100 \\
+severe\_t10\_n20 & KGB-DMOEA & 7266.4 & 0.0 & 7266.4 & 100.0 & 100--100 \\
+severe\_t10\_n20 & MDDM-DMOEA & 6000.0 & 600.0 & 6600.0 & 100.0 & 100--100 \\
+severe\_t10\_n20 & NSGA-II & 6000.0 & 0.0 & 6000.0 & 100.0 & 100--100 \\
+severe\_t10\_n20 & PPS-DMOEA & 6000.0 & 600.0 & 6600.0 & 100.0 & 100--100 \\
 \bottomrule
 \end{tabular}
 }

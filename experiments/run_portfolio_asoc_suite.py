@@ -125,12 +125,17 @@ MARKET20_PRICE_CACHE = DATA_DIR / "market20_adj_close.csv"
 MARKET20_ENV_CACHE = DATA_DIR / "market20_walkforward_envs.pkl"
 
 MAIN_ALGORITHMS = ("FITO", "DNSGA-II-A", "DNSGA-II-B", "KGB-DMOEA", "MDDM-DMOEA", "NSGA-II", "PPS-DMOEA")
+UNIVERSE_DISPLAY_LABELS = {
+    "tech14": "tech14 (14 assets)",
+    "market20": "market20 (20 assets)",
+}
 SEEDS = tuple(range(20))
 PRIMARY_RULE = "utopia"
 PRIMARY_COST = 0.001
 DECISION_RULES = ("utopia", "max_sharpe", "min_variance")
 COST_RATES = (0.0005, 0.0010, 0.0025)
-FIXED_BUDGET_TARGET = 60000
+# Nominal target; realized values differ by algorithm/universe and are audited in raw metrics.
+FIXED_BUDGET_TARGET = 60_000
 STAGNATION_LIMIT = 8
 
 FITO_DEFAULT_CONFIG = {
@@ -216,6 +221,8 @@ def download_market_prices(tickers: tuple[str, ...], cache_path: Path) -> pd.Dat
             try:
                 downloaded = yf.download(
                     ticker,
+                    # Download/cache range is intentionally broader than the generated
+                    # 38 holdout windows, which run from 2013-05-23 to 2022-11-22.
                     start="2012-05-18",
                     end="2023-01-01",
                     auto_adjust=False,
@@ -849,6 +856,10 @@ def summarize_primary(raw_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame,
     migd_summary = primary.groupby(["family", "universe", "algorithm"])["migd"].agg(["mean", "std"]).reset_index()
     deployment_metrics = ["final_wealth", "annualized_return", "annualized_volatility", "annualized_sharpe", "mean_turnover", "max_drawdown"]
     deployment_summary = primary.groupby(["family", "universe", "algorithm"])[deployment_metrics].agg(["mean", "std"]).reset_index()
+    deployment_summary.columns = [
+        "_".join([str(part) for part in col if part]).rstrip("_") if isinstance(col, tuple) else str(col)
+        for col in deployment_summary.columns
+    ]
     return mhv_summary, migd_summary, deployment_summary
 
 
@@ -972,15 +983,18 @@ def pairwise_stats(primary_df: pd.DataFrame, family_name: str) -> pd.DataFrame:
 
 
 def primary_table_latex(summary_df: pd.DataFrame, metric: str, higher_is_better: bool, caption: str, label: str) -> str:
+    """Render two-universe, seven-algorithm main-family portfolio metric tables."""
+    row_end = r" \\"
     lines = [
         "\\begin{table}[!t]",
         "\\centering",
+        "\\small",
         f"\\caption{{{caption}}}",
         f"\\label{{{label}}}",
         "\\resizebox{\\textwidth}{!}{%",
         "\\begin{tabular}{l" + "c" * len(MAIN_ALGORITHMS) + "}",
         "\\toprule",
-        "Universe & " + " & ".join(MAIN_ALGORITHMS) + " \\\\",
+        "Universe & " + " & ".join(MAIN_ALGORITHMS) + row_end,
         "\\midrule",
     ]
     for universe_name in UNIVERSES:
@@ -993,39 +1007,84 @@ def primary_table_latex(summary_df: pd.DataFrame, metric: str, higher_is_better:
             if np.isclose(float(row["mean"]), float(best)):
                 cell = "\\textbf{" + cell + "}"
             cells.append(cell)
-        lines.append(universe_name + " & " + " & ".join(cells) + " \\\\")
+        label_text = UNIVERSE_DISPLAY_LABELS.get(str(universe_name), str(universe_name))
+        lines.append(label_text + " & " + " & ".join(cells) + row_end)
     lines.extend(["\\bottomrule", "\\end{tabular}", "}", "\\end{table}"])
     return "\n".join(lines) + "\n"
 
 
 def deployment_table_latex(summary_df: pd.DataFrame, caption: str, label: str) -> str:
+    """Render the main-family two-universe, seven-algorithm deployment table.
+
+    The input summary is a flattened CSV-friendly frame with columns such as
+    final_wealth_mean and final_wealth_std; this avoids duplicated two-row CSV
+    headers and keeps the table generator aligned with the shipped artifact.
+    """
+    row_end = r" \\"
     lines = [
         "\\begin{table}[!t]",
         "\\centering",
+        "\\small",
         f"\\caption{{{caption}}}",
         f"\\label{{{label}}}",
         "\\resizebox{\\textwidth}{!}{%",
         "\\begin{tabular}{llcccc}",
         "\\toprule",
-        "Universe & Algorithm & Final wealth & Ann. return & Ann. vol. & Turnover \\\\",
+        "Universe & Algorithm & Final wealth & Ann. return & Ann. vol. & Mean turnover" + row_end,
         "\\midrule",
     ]
-    for universe_name in UNIVERSES:
-        rows = summary_df[(summary_df[("family", "")] == "main") & (summary_df[("universe", "")] == universe_name)]
+    universe_items = list(UNIVERSES)
+    for ui, universe_name in enumerate(universe_items):
+        rows = summary_df[(summary_df["family"] == "main") & (summary_df["universe"] == universe_name)]
+        best_wealth = rows["final_wealth_mean"].max()
         for algorithm_name in MAIN_ALGORITHMS:
-            row = rows[rows[("algorithm", "")] == algorithm_name].iloc[0]
+            row = rows[rows["algorithm"] == algorithm_name].iloc[0]
+            wealth = f"{row['final_wealth_mean']:.3f} $\\pm$ {row['final_wealth_std']:.3f}"
+            if np.isclose(float(row["final_wealth_mean"]), float(best_wealth)):
+                wealth = "\\textbf{" + wealth + "}"
+            label_text = UNIVERSE_DISPLAY_LABELS.get(str(universe_name), str(universe_name))
             lines.append(
-                f"{universe_name} & {algorithm_name} & "
-                f"{row[('final_wealth', 'mean')]:.3f} & "
-                f"{row[('annualized_return', 'mean')]:.3f} & "
-                f"{row[('annualized_volatility', 'mean')]:.3f} & "
-                f"{row[('mean_turnover', 'mean')]:.3f} \\\\"
+                f"{label_text} & {algorithm_name} & "
+                f"{wealth} & "
+                f"{row['annualized_return_mean']:.3f} & "
+                f"{row['annualized_volatility_mean']:.3f} & "
+                f"{row['mean_turnover_mean']:.3f}" + row_end
             )
-        lines.append("\\midrule")
-    lines[-1] = "\\bottomrule"
-    lines.extend(["\\end{tabular}", "}", "\\end{table}"])
+        if ui != len(universe_items) - 1:
+            lines.append("\\midrule")
+    lines.extend(["\\bottomrule", "\\end{tabular}", "}", "\\end{table}"])
     return "\n".join(lines) + "\n"
 
+
+def benchmark_table_latex(benchmark_df: pd.DataFrame, caption: str, label: str) -> str:
+    """Render deterministic EqualWeight/RollingMinVar deployment references."""
+    row_end = r" \\"
+    lines = [
+        "\\begin{table}[!t]",
+        "\\centering",
+        "\\small",
+        f"\\caption{{{caption}}}",
+        f"\\label{{{label}}}",
+        "\\resizebox{\\textwidth}{!}{%",
+        "\\begin{tabular}{llcccc}",
+        "\\toprule",
+        "Universe & Reference & Final wealth & Ann. return & Ann. vol. & Mean turnover" + row_end,
+        "\\midrule",
+    ]
+    universe_items = list(UNIVERSES)
+    for ui, universe_name in enumerate(universe_items):
+        rows = benchmark_df[benchmark_df["universe"] == universe_name]
+        for _, row in rows.iterrows():
+            label_text = UNIVERSE_DISPLAY_LABELS.get(str(universe_name), str(universe_name))
+            lines.append(
+                f"{label_text} & {row['benchmark']} & "
+                f"{row['final_wealth']:.3f} & {row['annualized_return']:.3f} & "
+                f"{row['annualized_volatility']:.3f} & {row['mean_turnover']:.3f}" + row_end
+            )
+        if ui != len(universe_items) - 1:
+            lines.append("\\midrule")
+    lines.extend(["\\bottomrule", "\\end{tabular}", "}", "\\end{table}"])
+    return "\n".join(lines) + "\n"
 
 def write_summary(
     primary_df: pd.DataFrame,
@@ -1210,8 +1269,16 @@ def main() -> None:
     (RESULTS_DIR / "asoc_portfolio_deployment_table.tex").write_text(
         deployment_table_latex(
             deployment_summary,
-            caption="Primary walk-forward deployment metrics under closest-to-utopia selection at 10 bps.",
+            caption="Main-family walk-forward deployment metrics for both portfolio universes under the closest-to-utopia selection rule at 10 bps. Values are generated from the flattened \\texttt{asoc\\_portfolio\\_deployment\\_summary.csv}; both universes and all seven ASOC algorithms are shown.",
             label="tab:portfolio-deployment",
+        ),
+        encoding="utf-8",
+    )
+    (RESULTS_DIR / "asoc_portfolio_benchmark_table.tex").write_text(
+        benchmark_table_latex(
+            benchmark_df,
+            caption="Deterministic deployment references for the secondary walk-forward portfolio stress test under the primary 10 bps cost setting. These references provide scale only and are not included in FITO-versus-DMOEA statistical tests.",
+            label="tab:portfolio-benchmarks",
         ),
         encoding="utf-8",
     )
